@@ -4,10 +4,10 @@
 #include <stdlib.h>     /* srand, rand */
 #include <time.h>       /* time */
 
-const int inputs = 4;
-const int layers = 8;
-const int perLayer = 4; //must be > inputs at the moment due to size of Node.fromConnections being defined as perLay
-const int outputs = 4;
+const int inputs = 3;
+const int layers = 2;
+const int perLayer = 3; //must be > inputs at the moment due to size of Node.fromConnections being defined as perLay
+const int outputs = 3;
 
 // neuron 2 in layer 1 connects to a neuron 3 in layer 2 by connections[1][2][3]
 // input layer is layer 0
@@ -80,6 +80,8 @@ void changeWeightsBasedOnBatchGradients(float _learningFactor) {
 
 				//learning factor is the max percentage bigger / smaller the connection should be able to get
 				//batchDErrorDConnections[i][j][k] / gradientTotal is the percentage of that learning factor to be used
+				double fuck = (1 - _learningFactor * (batchDErrorDConnections[i][j][k] / gradientTotal));
+				double cunt = batchDErrorDConnections[i][j][k] / gradientTotal;
 				connections[i][j][k] = connections[i][j][k] * (1 - _learningFactor * (batchDErrorDConnections[i][j][k] / gradientTotal));
 			}
 		}
@@ -109,7 +111,7 @@ float addGradientsBasedOnWeights() {
 	//fill dErrorDConnections[layers-2][indexInLayer][i] for last layer of connections
 	for (int i = 0; i < perLayer; i++) {
 		for (int j = 0; j < outputs; j++) {
-			dErrorDConnections[layers - 2][i][j] = -2 * nodes[layers - 2][i].value*(outputSet[i] - nodes[layers - 1][i].value);
+			dErrorDConnections[layers - 2][i][j] = -2 * nodes[layers - 2][i].value*(outputSet[j] - nodes[layers - 1][j].value);
 		}
 	}
 	// looping from last layer to last non output layer running back on each to populate dConnectionsDError
@@ -135,7 +137,7 @@ int main()
 {
 	//seeding rand()
 	srand(time(NULL));
-	//setting all connection weights to 1
+	//setting all connection weights to random between 0 and 1
 	for (int i = 0; i < layers; i++) {
 		for (int j = 0; j < perLayer; j++) {
 			for (int k = 0; k < perLayer; k++) {
@@ -160,9 +162,9 @@ int main()
 	//train
 	int batchSize = 1000;
 	int batches = 10000;
-	std::cout << "batches: " << batches << "\nbatch size: " << batchSize << "\n";
+	//std::cout << "batches: " << batches << "\nbatch size: " << batchSize << "\n";
 	for (int l = 0; l < batches; l++) {
-		std::cout << "round " << l << " average error : ";
+		//std::cout << "round " << l << " average error : " << "\n";
 		float error = 0;;
 		//clearing the batch gradient
 		for (int i = 0; i < layers; i++) {
@@ -178,20 +180,27 @@ int main()
 				inputSet[i] = (float)rand() / (float)RAND_MAX;
 			}
 			//setup output set
-			for (int i = 0; i < outputs; i++) {
+			outputSet[0] = inputSet[2] * 0.5 + inputSet[1] * 0.25;
+			outputSet[1] = inputSet[0] * 0.5 + inputSet[2] * 0.25;
+			outputSet[2] = inputSet[1] * 0.5 + inputSet[0] * 0.25;
+			/*for (int i = 0; i < outputs; i++) {
 				if (i == outputs - 1) {
 					outputSet[i] = inputSet[0] * 0.5;
 				}
 				else {
 					outputSet[i] = inputSet[i + 1] * 0.5;
 				}				
-			}
+			}*/
 			//adding the gradients for this batch
 			//error = (error * m + addGradientsBasedOnWeights())/(m +1);
 			error += addGradientsBasedOnWeights();
 		}
 		//printing the average error for this last batch
-		std::cout << error/batchSize << "\n";
+		//std::cout << "w11: " << *connections[0][0] << " er: " << batchDErrorDConnections[0][0][0] << "\n";
+		//std::cout << "w12: " << *connections[0][1] << " er: " << batchDErrorDConnections[0][0][1] << "\n";
+		//std::cout << "w21: " << *connections[1][0] << " er: " << batchDErrorDConnections[0][1][0] << "\n";
+		//std::cout << "w22: " << connections[0][1][1] << " er: " << batchDErrorDConnections[0][1][1] << "\n";
+		//std::cout << error/batchSize << "\n";
 		changeWeightsBasedOnBatchGradients(0.1);
 
 		//for (int i = 0; i < layers; i++) {
@@ -206,21 +215,28 @@ int main()
 	std::cout << "TESTING:\n";
 	//testing:
 	int testSize = 100;
+	//std::cout << "2 . 1:  " << connections[0][1][0] << "\n";
 	for (int m = 0; m < testSize; m++) {
 		//setup input set
 		for (int i = 0; i < inputs; i++) {
 			inputSet[i] = (float)rand() / (float)RAND_MAX;
 		}
 		//setup output set
-		for (int i = 0; i < outputs; i++) {
+		/*for (int i = 0; i < outputs; i++) {
 			if (i == outputs - 1) {
 				outputSet[i] = inputSet[0] * 0.5;
 			}
 			else {
 				outputSet[i] = inputSet[i + 1] * 0.5;
 			}
-		}
+		}*/
+		outputSet[0] = inputSet[2] * 0.5 + inputSet[1] * 0.25;
+		outputSet[1] = inputSet[0] * 0.5 + inputSet[2] * 0.25;
+		outputSet[2] = inputSet[1] * 0.5 + inputSet[0] * 0.25;
 		std::cout << "error: " << addGradientsBasedOnWeights() << "\n";
+		std::cout << ":" << nodes[1][1].value << ":" << outputSet[1] << "\n";
+		std::cout << ":" << nodes[1][0].value << ":" << outputSet[0] << "\n";
+		std::cout << ":" << nodes[1][2].value << ":" << outputSet[2] << "\n";
 	}
 	while (true) {}
 }
