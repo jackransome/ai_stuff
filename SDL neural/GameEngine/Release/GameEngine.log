@@ -1,0 +1,4 @@
+﻿LINK : warning LNK4068: /MACHINE not specified; defaulting to X86
+glew32.lib(glew32.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR already defined in SDL2.lib(SDL2.dll); second definition ignored
+opengl32.lib(OPENGL32.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR already defined in SDL2.lib(SDL2.dll); second definition ignored
+  GameEngine.vcxproj -> C:\Users\jack\Documents\GitHub\SDLgame\Release\GameEngine.lib

@@ -1,0 +1,18 @@
+﻿  Grid.cpp
+Grid.cpp(72): warning C4018: '<': signed/unsigned mismatch
+Grid.cpp(111): warning C4018: '<': signed/unsigned mismatch
+Grid.cpp(135): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+Grid.cpp(136): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+Grid.cpp(141): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+Grid.cpp(142): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+GameEngine.lib(GameEngine.obj) : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/OPT:ICF' specification
+  Generating code
+  10 of 257 functions ( 3.9%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+Grid.obj : warning LNK4020: a type record in 'c:\users\jack\documents\github\sdlgame\project1\release\vc140.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+main.obj : warning LNK4020: a type record in 'c:\users\jack\documents\github\sdlgame\project1\release\vc140.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+MainGame.obj : warning LNK4020: a type record in 'c:\users\jack\documents\github\sdlgame\project1\release\vc140.pdb' is corrupted; some symbols and types may not be accessible from the debugger
+  Project1.vcxproj -> C:\Users\jack\Documents\GitHub\SDLgame\Release\Project1.exe
+  Project1.vcxproj -> C:\Users\jack\Documents\GitHub\SDLgame\Release\Project1.pdb (Full PDB)

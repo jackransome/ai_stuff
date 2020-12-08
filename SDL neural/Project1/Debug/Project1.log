@@ -1,0 +1,7 @@
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(391,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (PathFinding.vcxproj, Project1.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  WallTurretCollection.cpp
+c:\users\jack\documents\github\sdl_game_2019\project1\wallturretcollection.cpp(42): warning C4018: '<': signed/unsigned mismatch
+c:\users\jack\documents\github\sdl_game_2019\project1\wallturretcollection.cpp(66): warning C4018: '<': signed/unsigned mismatch
+c:\users\jack\documents\github\sdl_game_2019\project1\wallturretcollection.cpp(73): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\jack\documents\github\sdl_game_2019\project1\wallturretcollection.cpp(93): warning C4018: '<': signed/unsigned mismatch
+  Project1.vcxproj -> C:\Users\Jack\Documents\GitHub\SDL_game_2019\Debug\Game.exe

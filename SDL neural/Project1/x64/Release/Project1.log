@@ -1,0 +1,10 @@
+﻿  MainGame.cpp
+c:\users\jack\documents\github\ai stuff\sdl neural\project1\maingame.cpp(40): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+c:\users\jack\documents\github\ai stuff\sdl neural\project1\maingame.cpp(74): warning C4305: '+=': truncation from 'double' to 'float'
+c:\users\jack\documents\github\ai stuff\sdl neural\project1\maingame.cpp(127): warning C4244: 'argument': conversion from 'Sint32' to 'float', possible loss of data
+  Generating code
+  5 of 1162 functions ( 0.4%) were compiled, the rest were copied from previous compilation.
+    1 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  Project1.vcxproj -> C:\Users\Jack\Documents\GitHub\ai stuff\SDL neural\x64\Release\Game.exe

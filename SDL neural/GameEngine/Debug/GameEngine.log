@@ -1,0 +1,74 @@
+﻿  Camera2D.cpp
+c:\users\jack\documents\github\sdl_game_2019\gameengine\camera2d.cpp(26): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+c:\users\jack\documents\github\sdl_game_2019\gameengine\camera2d.cpp(27): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+c:\users\jack\documents\github\sdl_game_2019\gameengine\camera2d.cpp(87): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+c:\users\jack\documents\github\sdl_game_2019\gameengine\camera2d.cpp(88): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+c:\users\jack\documents\github\sdl_game_2019\gameengine\camera2d.cpp(91): warning C4305: '*=': truncation from 'double' to 'float'
+  CollisionDetection.cpp
+c:\users\jack\documents\github\sdl_game_2019\gameengine\collisiondetection.cpp(429): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\jack\documents\github\sdl_game_2019\gameengine\collisiondetection.cpp(435): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\jack\documents\github\sdl_game_2019\gameengine\collisiondetection.cpp(441): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\jack\documents\github\sdl_game_2019\gameengine\collisiondetection.cpp(447): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\jack\documents\github\sdl_game_2019\gameengine\collisiondetection.cpp(481): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+c:\users\jack\documents\github\sdl_game_2019\gameengine\collisiondetection.cpp(485): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+c:\users\jack\documents\github\sdl_game_2019\gameengine\collisiondetection.cpp(489): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+  DrawText.cpp
+c:\users\jack\documents\github\sdl_game_2019\gameengine\drawtext.cpp(81): warning C4018: '<': signed/unsigned mismatch
+  Errors.cpp
+  GameEngine.cpp
+c:\users\jack\documents\github\sdl_game_2019\gameengine\gameengine.cpp(44): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\jack\documents\github\sdl_game_2019\gameengine\gameengine.cpp(45): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+c:\users\jack\documents\github\sdl_game_2019\gameengine\gameengine.cpp(46): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+c:\users\jack\documents\github\sdl_game_2019\gameengine\gameengine.cpp(90): warning C4305: 'initializing': truncation from 'double' to 'float'
+  GLSLProgram.cpp
+  ImageLoader.cpp
+  InputManager.cpp
+  IOManager.cpp
+c:\users\jack\documents\github\sdl_game_2019\gameengine\iomanager.cpp(18): warning C4244: 'initializing': conversion from 'std::streamoff' to 'int', possible loss of data
+c:\users\jack\documents\github\sdl_game_2019\gameengine\iomanager.cpp(22): warning C4244: '-=': conversion from 'std::streamoff' to 'int', possible loss of data
+  picoPNG.cpp
+  ResourceManager.cpp
+  Sprite.cpp
+  SpriteBatch.cpp
+c:\users\jack\documents\github\sdl_game_2019\gameengine\spritebatch.cpp(25): warning C4018: '<': signed/unsigned mismatch
+c:\users\jack\documents\github\sdl_game_2019\gameengine\spritebatch.cpp(37): warning C4244: '=': conversion from 'float' to 'GLubyte', possible loss of data
+c:\users\jack\documents\github\sdl_game_2019\gameengine\spritebatch.cpp(38): warning C4244: '=': conversion from 'float' to 'GLubyte', possible loss of data
+c:\users\jack\documents\github\sdl_game_2019\gameengine\spritebatch.cpp(39): warning C4244: '=': conversion from 'float' to 'GLubyte', possible loss of data
+c:\users\jack\documents\github\sdl_game_2019\gameengine\spritebatch.cpp(40): warning C4244: '=': conversion from 'float' to 'GLubyte', possible loss of data
+c:\users\jack\documents\github\sdl_game_2019\gameengine\spritebatch.cpp(335): warning C4018: '<': signed/unsigned mismatch
+c:\users\jack\documents\github\sdl_game_2019\gameengine\spritebatch.cpp(374): warning C4018: '<': signed/unsigned mismatch
+  SpriteSheet.cpp
+c:\users\jack\documents\github\sdl_game_2019\gameengine\spritesheet.cpp(16): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\jack\documents\github\sdl_game_2019\gameengine\spritesheet.cpp(17): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\jack\documents\github\sdl_game_2019\gameengine\spritesheet.cpp(18): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+  TextureCache.cpp
+  Timing.cpp
+c:\users\jack\documents\github\sdl_game_2019\gameengine\timing.cpp(24): warning C4244: 'initializing': conversion from 'Uint32' to 'float', possible loss of data
+c:\users\jack\documents\github\sdl_game_2019\gameengine\timing.cpp(41): warning C4244: 'initializing': conversion from 'Uint32' to 'float', possible loss of data
+c:\users\jack\documents\github\sdl_game_2019\gameengine\timing.cpp(44): warning C4244: 'initializing': conversion from 'Uint32' to 'float', possible loss of data
+  Window.cpp
+  Generating Code...
+c:\users\jack\documents\github\sdl_game_2019\gameengine\drawtext.cpp(174): warning C4715: 'GameEngine::DrawText::getIndexFromString': not all control paths return a value
+c:\users\jack\documents\github\sdl_game_2019\gameengine\collisiondetection.cpp(491): warning C4715: 'GameEngine::CollisionDetection::getAngle': not all control paths return a value
+LINK : warning LNK4068: /MACHINE not specified; defaulting to X86
+glew32.lib(glew32.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR already defined in SDL2.lib(SDL2.dll); second definition ignored
+glew32.lib(glew32.dll) : warning LNK4221: This object file does not define any previously undefined public symbols, so it will not be used by any link operation that consumes this library
+opengl32.lib(OPENGL32.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR already defined in SDL2.lib(SDL2.dll); second definition ignored
+opengl32.lib(OPENGL32.dll) : warning LNK4221: This object file does not define any previously undefined public symbols, so it will not be used by any link operation that consumes this library
+  GameEngine.vcxproj -> C:\Users\Jack\Documents\GitHub\SDL_game_2019\Debug\GameEngine.lib
