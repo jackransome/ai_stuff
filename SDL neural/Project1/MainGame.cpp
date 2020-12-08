@@ -12,8 +12,8 @@
 
 //Constructor, just initializes private member variables
 MainGame::MainGame() :
-	_screenWidth(1920),
-	_screenHeight(1080),
+	_screenWidth(1200),
+	_screenHeight(800),
 	_time(0.0f),
 	_gameState(GameState::PLAY),
 	_maxFPS(60.0f)
@@ -197,10 +197,10 @@ void MainGame::drawGame() {
 				}
 				else {
 					if (nn.connections[i][j][k] > 1) {
-						spriteBatch.drawLine(glm::vec2(i * 100, j * 10 - 30), glm::vec2(i * 100 + 100, k * 10 - 30), 0/*nn.dErrorDConnections[i][j][k] * 255*/, 255, 0, NULL, 1);
+						spriteBatch.drawLine(glm::vec2(i * 150, j * 15 - 30), glm::vec2(i * 150 + 150, k * 15 - 30), 0/*nn.dErrorDConnections[i][j][k] * 255*/, 255, 0, NULL, 1);
 					}
 					else {
-						spriteBatch.drawLine(glm::vec2(i * 100, j * 10 - 30), glm::vec2(i * 100 + 100, k * 10 - 30), 0/*nn.dErrorDConnections[i][j][k] * 255*/, nn.connections[i][j][k] * 255, 0, NULL, 1);
+						spriteBatch.drawLine(glm::vec2(i * 150, j * 15 - 30), glm::vec2(i * 150 + 150, k * 15 - 30), 0/*nn.dErrorDConnections[i][j][k] * 255*/, nn.connections[i][j][k] * 255, 0, NULL, 1);
 					}
 				}
 				

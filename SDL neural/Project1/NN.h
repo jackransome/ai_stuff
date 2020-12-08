@@ -10,8 +10,8 @@ struct Node
 };
 
 const int inputs = 6;
-const int layers = 7;
-const int perLayer = 8; //must be > inputs at the moment due to size of Node.fromConnections being defined as perLay
+const int layers = 2;
+const int perLayer = 6; //must be > inputs at the moment due to size of Node.fromConnections being defined as perLay
 const int outputs = 6;
 
 class NN {

@@ -201,7 +201,7 @@ void NN::trainNetwork() {
 
 float NN::test(){
 	float error = 0;
-	int batchSize = 100;
+	int batchSize = 10;
 	for (int m = 0; m < batchSize; m++) {
 		//setup input set
 		for (int i = 0; i < inputs; i++) {
