@@ -187,7 +187,6 @@ void MainGame::drawGame() {
 	//spriteBatch.drawLine(glm::vec2(0,0), glm::vec2(100, 100), 60, 30, 220, NULL, 1);
 
 	//DRAW THE NETWORK:
-
 	//(STILL HAVE TO COPY IN THE NN CODE FROM THE OTHER PROJ)
 	nn.trainNetwork();
 	for (int i = 0; i < layers - 1; i++) {
@@ -197,7 +196,12 @@ void MainGame::drawGame() {
 					//spriteBatch.drawLine(glm::vec2(i * 100, j * 10 - 30), glm::vec2(i * 100 + 100, k * 10 - 30), 255, 0, 0, NULL, 1);
 				}
 				else {
-					spriteBatch.drawLine(glm::vec2(i * 100, j * 10 - 30), glm::vec2(i * 100 + 100, k * 10 - 30), nn.dErrorDConnections[i][j][k] * 255, nn.connections[i][j][k] * 255, 0, NULL, 1);
+					if (nn.connections[i][j][k] > 1) {
+						spriteBatch.drawLine(glm::vec2(i * 100, j * 10 - 30), glm::vec2(i * 100 + 100, k * 10 - 30), 0/*nn.dErrorDConnections[i][j][k] * 255*/, 255, 0, NULL, 1);
+					}
+					else {
+						spriteBatch.drawLine(glm::vec2(i * 100, j * 10 - 30), glm::vec2(i * 100 + 100, k * 10 - 30), 0/*nn.dErrorDConnections[i][j][k] * 255*/, nn.connections[i][j][k] * 255, 0, NULL, 1);
+					}
 				}
 				
 			}

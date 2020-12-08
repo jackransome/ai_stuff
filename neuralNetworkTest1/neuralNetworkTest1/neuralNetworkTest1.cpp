@@ -58,8 +58,11 @@ void back(int _layer, int _index, int _nodeInPrevLayerIndex) {
 	//getting d value of current / d error
 	float dedc = 0;
 	for (int i = 0; i < perLayer; i++) {
-		dedc += dErrorDConnections[_layer][_index][i];
+		if (nodes[_layer + 1][i].exists) {
+			dedc += dErrorDConnections[_layer][_index][i];
+		}
 	}
+	//getting d error / d weight from prev
 	float dedwp = dedc * dcdwp;
 	dErrorDConnections[_layer - 1][_nodeInPrevLayerIndex][_index] = dedwp;
 }
@@ -80,8 +83,6 @@ void changeWeightsBasedOnBatchGradients(float _learningFactor) {
 
 				//learning factor is the max percentage bigger / smaller the connection should be able to get
 				//batchDErrorDConnections[i][j][k] / gradientTotal is the percentage of that learning factor to be used
-				double fuck = (1 - _learningFactor * (batchDErrorDConnections[i][j][k] / gradientTotal));
-				double cunt = batchDErrorDConnections[i][j][k] / gradientTotal;
 				connections[i][j][k] = connections[i][j][k] * (1 - _learningFactor * (batchDErrorDConnections[i][j][k] / gradientTotal));
 			}
 		}
@@ -164,8 +165,8 @@ int main()
 	int batches = 10000;
 	//std::cout << "batches: " << batches << "\nbatch size: " << batchSize << "\n";
 	for (int l = 0; l < batches; l++) {
-		//std::cout << "round " << l << " average error : " << "\n";
-		float error = 0;;
+		std::cout << "round " << l << " average error : " << "\n";
+		float error = 0;
 		//clearing the batch gradient
 		for (int i = 0; i < layers; i++) {
 			for (int j = 0; j < perLayer; j++) {
@@ -196,11 +197,11 @@ int main()
 			error += addGradientsBasedOnWeights();
 		}
 		//printing the average error for this last batch
-		//std::cout << "w11: " << *connections[0][0] << " er: " << batchDErrorDConnections[0][0][0] << "\n";
-		//std::cout << "w12: " << *connections[0][1] << " er: " << batchDErrorDConnections[0][0][1] << "\n";
-		//std::cout << "w21: " << *connections[1][0] << " er: " << batchDErrorDConnections[0][1][0] << "\n";
-		//std::cout << "w22: " << connections[0][1][1] << " er: " << batchDErrorDConnections[0][1][1] << "\n";
-		//std::cout << error/batchSize << "\n";
+		std::cout << "w11: " << *connections[0][0] << " er: " << batchDErrorDConnections[0][0][0] << "\n";
+		std::cout << "w12: " << *connections[0][1] << " er: " << batchDErrorDConnections[0][0][1] << "\n";
+		std::cout << "w21: " << *connections[1][0] << " er: " << batchDErrorDConnections[0][1][0] << "\n";
+		std::cout << "w22: " << connections[0][1][1] << " er: " << batchDErrorDConnections[0][1][1] << "\n";
+		std::cout << error/batchSize << "\n";
 		changeWeightsBasedOnBatchGradients(0.1);
 
 		//for (int i = 0; i < layers; i++) {

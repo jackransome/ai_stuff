@@ -1,10 +1,10 @@
 ﻿  neuralNetworkTest1.cpp
-c:\users\jack\documents\github\ai_stuff\neuralnetworktest1\neuralnetworktest1\neuralnetworktest1.cpp(139): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-c:\users\jack\documents\github\ai_stuff\neuralnetworktest1\neuralnetworktest1\neuralnetworktest1.cpp(183): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\jack\documents\github\ai_stuff\neuralnetworktest1\neuralnetworktest1\neuralnetworktest1.cpp(184): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\jack\documents\github\ai_stuff\neuralnetworktest1\neuralnetworktest1\neuralnetworktest1.cpp(185): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\jack\documents\github\ai_stuff\neuralnetworktest1\neuralnetworktest1\neuralnetworktest1.cpp(204): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\users\jack\documents\github\ai_stuff\neuralnetworktest1\neuralnetworktest1\neuralnetworktest1.cpp(233): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\jack\documents\github\ai_stuff\neuralnetworktest1\neuralnetworktest1\neuralnetworktest1.cpp(234): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\jack\documents\github\ai_stuff\neuralnetworktest1\neuralnetworktest1\neuralnetworktest1.cpp(235): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-  neuralNetworkTest1.vcxproj -> C:\Users\Jack\Documents\GitHub\ai_stuff\neuralNetworkTest1\Debug\neuralNetworkTest1.exe
+c:\users\jack\documents\github\ai stuff\ai_stuff\neuralnetworktest1\neuralnetworktest1\neuralnetworktest1.cpp(140): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+c:\users\jack\documents\github\ai stuff\ai_stuff\neuralnetworktest1\neuralnetworktest1\neuralnetworktest1.cpp(184): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\jack\documents\github\ai stuff\ai_stuff\neuralnetworktest1\neuralnetworktest1\neuralnetworktest1.cpp(185): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\jack\documents\github\ai stuff\ai_stuff\neuralnetworktest1\neuralnetworktest1\neuralnetworktest1.cpp(186): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\jack\documents\github\ai stuff\ai_stuff\neuralnetworktest1\neuralnetworktest1\neuralnetworktest1.cpp(205): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\jack\documents\github\ai stuff\ai_stuff\neuralnetworktest1\neuralnetworktest1\neuralnetworktest1.cpp(234): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\jack\documents\github\ai stuff\ai_stuff\neuralnetworktest1\neuralnetworktest1\neuralnetworktest1.cpp(235): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\jack\documents\github\ai stuff\ai_stuff\neuralnetworktest1\neuralnetworktest1\neuralnetworktest1.cpp(236): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  neuralNetworkTest1.vcxproj -> C:\Users\Jack\Documents\GitHub\ai stuff\ai_stuff\neuralNetworkTest1\Debug\neuralNetworkTest1.exe

@@ -3,14 +3,16 @@
 
 struct Node
 {
-	float value;
+	double value;
 	bool exists; // because the input and output layers might be smaller than the hidden one
+	//d value d error
+	double dedv;
 };
 
-const int inputs = 2;
-const int layers = 20;
-const int perLayer = 20; //must be > inputs at the moment due to size of Node.fromConnections being defined as perLay
-const int outputs = 2;
+const int inputs = 6;
+const int layers = 7;
+const int perLayer = 8; //must be > inputs at the moment due to size of Node.fromConnections being defined as perLay
+const int outputs = 6;
 
 class NN {
 public:
@@ -20,10 +22,10 @@ public:
 	// neuron 2 in layer 1 connects to a neuron 3 in layer 2 by connections[1][2][3]
 	// input layer is layer 0
 	// output layer is layer layers-1
-	float connections[layers-1][perLayer][perLayer];
+	double connections[layers - 1][perLayer][perLayer];
 
-	float dErrorDConnections[layers][perLayer][perLayer];
-	float batchDErrorDConnections[layers][perLayer][perLayer];
+	double dErrorDConnections[layers][perLayer][perLayer];
+	double batchDErrorDConnections[layers][perLayer][perLayer];
 
 	float errors[outputs];
 
