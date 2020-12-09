@@ -14,6 +14,10 @@ class NN {
 public:
 	NN();
 
+	int counter = 0;
+
+	double lastGradientMagnitude;
+
 	int inputs;
 	int layers;
 	int perLayer; //must be > inputs at the moment due to size of Node.fromConnections being defined as perLay
@@ -33,6 +37,14 @@ public:
 
 	double *outputSet;
 
+	int maxCachedSets;
+
+	int numberOfCachedSets;
+
+	double **cachedInputs;
+
+	double **cachedOutputs;
+
 	// same way to access as connections, just missing the index of the next layers neurons
 	Node **nodes;
 
@@ -48,13 +60,21 @@ public:
 
 	void trainNetwork();
 
-	void addTrainingSet();
+	void addTrainingSet(double * inputs, double * outputs);
 
 	void clearTrainingSets();
 
 	void trainOnCachedSets();
 
+	double addGradientFromCachedSet(int _index);
+
 	float test();
+
+	void addTrainingSetTest();
+
+	void clearBatchGradient();
+
+	void perturb();
 
 private:
 

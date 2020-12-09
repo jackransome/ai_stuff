@@ -78,4 +78,5 @@ private:
 	float _time;
 	bool lastPressedL = false;
 	bool lastPressedR = false;
+	bool lastg = false;
 };

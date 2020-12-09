@@ -141,7 +141,25 @@ void MainGame::processInput() {
 		}
 	}
 	if (_inputManager.isKeyPressed(SDLK_f)) {
-		nn.init(6, ((float)rand() / (float)RAND_MAX)*10+2, 6, 6);
+		nn.init(6,/* ((float)rand() / (float)RAND_MAX)*10+*/6, 6, 6);
+	}
+	if (_inputManager.isKeyPressed(SDLK_g)) {
+		if (!lastg) {
+			std::cout << "Test:==============================================\n";
+			std::cout << "Error: " << nn.test() << "\n";
+			lastg = true;
+			std::cout << "===================================================\n";
+		}
+	}
+	else {
+		lastg = false;
+	}
+	if (_inputManager.isKeyPressed(SDLK_h)) {
+		nn.perturb();
+	}
+	if (_inputManager.isKeyPressed(SDLK_j)) {
+		std::cout << "Last gradient magnitude: " << nn.lastGradientMagnitude << "\n";
+		
 	}
 }
 
@@ -188,7 +206,12 @@ void MainGame::drawGame() {
 
 	//DRAW THE NETWORK:
 	//(STILL HAVE TO COPY IN THE NN CODE FROM THE OTHER PROJ)
-	nn.trainNetwork();
+	for (int i = 0; i < 100; i++) {
+		nn.addTrainingSetTest();
+	}
+	nn.trainOnCachedSets();
+	nn.clearTrainingSets();
+	//nn.trainNetwork();
 	for (int i = 0; i < nn.layers - 1; i++) {
 		for (int j = 0; j < nn.perLayer; j++) { //the previous
 			for (int k = 0; k < nn.perLayer; k++) { //the current
@@ -218,7 +241,7 @@ void MainGame::drawGame() {
 
 		}
 	}
-	colour.r = nn.test() * 5;
+	//colour.r = nn.test() * 5;
 	colour.g = 0;
 	colour.b = 0;
 	spriteBatch.draw(glm::vec4(-300, 50, 50, 50), glm::vec4(0, 0, 0, 0), NULL, 1, colour);

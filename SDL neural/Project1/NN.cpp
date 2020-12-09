@@ -56,6 +56,7 @@ void NN::changeWeightsBasedOnBatchGradients(float _learningFactor) {
 		}
 	}
 	magnitude = sqrt(magnitude);
+	lastGradientMagnitude = magnitude;
 	//changing weights based on batch gradients:
 	for (int i = 0; i < layers-1; i++) {
 		for (int j = 0; j < perLayer; j++) {
@@ -74,7 +75,7 @@ void NN::changeWeightsBasedOnBatchGradients(float _learningFactor) {
 float NN::addGradientsBasedOnWeights() {
 	//clearing dErrorDConnections
 	for (int i = 0; i < layers-1; i++) {
-		for (int j = 0; j < perLayer; j++) {
+		for (int j = 0; j < perLayer; j++) { 
 			for (int k = 0; k < perLayer; k++) {
 				dErrorDConnections[i][j][k] = 0;
 			}
@@ -93,6 +94,7 @@ float NN::addGradientsBasedOnWeights() {
 	// calculating the error for each output based on the calculated output layer values and the output set
 	for (int i = 0; i < outputs; i++) {
 		errors[i] = pow(outputSet[i] - nodes[layers - 1][i].value, 2);
+		
 	}
 	//calculating total error
 	float totalError = 0;
@@ -133,6 +135,13 @@ void NN::init(int _inputs, int _layers, int _perLayer, int _outputs)
 	layers = _layers;
 	perLayer = _perLayer;
 	outputs = _outputs;
+	//setting up caching for training sets (batching)
+	maxCachedSets = 1000;
+	numberOfCachedSets = 0;
+	cachedInputs = (double**)malloc(maxCachedSets * inputs * sizeof(double*));
+	cachedOutputs = (double**)malloc(maxCachedSets*outputs * sizeof(double*));
+
+
 	int perLayerDimension = std::max(std::max(perLayer, inputs), outputs);
 	//allocating errors memory:
 	errors = (double*)malloc(outputs * sizeof(double));
@@ -221,13 +230,7 @@ void NN::trainNetwork() {
 	int batchSize = 1000;
 	
 	//clearing the batch gradient
-	for (int i = 0; i < layers-1; i++) {
-		for (int j = 0; j < perLayer; j++) {
-			for (int k = 0; k < perLayer; k++) {
-				batchDErrorDConnections[i][j][k] = 0;
-			}
-		}
-	}
+	clearBatchGradient();
 	double error = 0;
 	for (int m = 0; m < batchSize; m++) {
 		
@@ -262,13 +265,47 @@ void NN::trainNetwork() {
 	
 }
 
+void NN::addTrainingSet(double * _inputs, double * _outputs){
+	cachedInputs[numberOfCachedSets] = (double*)malloc(sizeof(double)*inputs);
+	memcpy(cachedInputs[numberOfCachedSets], _inputs, sizeof(double)*inputs);
+	cachedOutputs[numberOfCachedSets] = (double*)malloc(sizeof(double)*outputs);
+	memcpy(cachedOutputs[numberOfCachedSets], _outputs, sizeof(double)*outputs);
+	numberOfCachedSets++;
+}
+
+void NN::clearTrainingSets(){
+	numberOfCachedSets = 0;
+}
+
+void NN::trainOnCachedSets(){
+	clearBatchGradient();
+	double error = 0;
+	for (int i = 0; i < numberOfCachedSets; i++) {
+		error += addGradientFromCachedSet(i);
+	}
+	counter++;
+	//std::cout << "avg err: " << error << "\n";
+	if (error / numberOfCachedSets > 0.2 && counter > 600) {
+		std::cout << "error: " << error/ numberOfCachedSets << "\n";
+		perturb();
+		counter = 0;
+	}
+	changeWeightsBasedOnBatchGradients(0.4);
+}
+
+double NN::addGradientFromCachedSet(int _index){
+	inputSet = cachedInputs[_index];
+	outputSet = cachedOutputs[_index];
+	return addGradientsBasedOnWeights();
+}
+
 float NN::test(){
 	float error = 0;
-	int batchSize = 10;
+	int batchSize = 1;
 	for (int m = 0; m < batchSize; m++) {
 		//setup input set
 		for (int i = 0; i < inputs; i++) {
-			inputSet[i] = i;// (float)rand() / (float)RAND_MAX;
+			inputSet[i] =  round((float)rand() / (float)RAND_MAX);
 		}
 		//setup output set
 		//outputSet[0] = inputSet[2] * 0.5 + inputSet[1] * 0.25;
@@ -277,16 +314,63 @@ float NN::test(){
 		
 		for (int i = 0; i < outputs; i++) {
 			if (i == outputs - 1) {
-				outputSet[i] = inputSet[0] * 0.5;
+				outputSet[i] = inputSet[0];
 			}
 			else {
-				outputSet[i] = inputSet[i + 1] * 0.5;
+				outputSet[i] = inputSet[i + 1];
 			}
-			outputSet[i] = inputSet[i]*5;
 		}
 		//adding the gradients for this batch
 		//error = (error * m + addGradientsBasedOnWeights())/(m +1);
 		error += addGradientsBasedOnWeights();
+
 	}
+	for (int i = 0; i < outputs; i++) {
+		std::cout << outputSet[i] << " vs " << nodes[layers - 1][i].value << "\n";
+	}
+	
 	return error / batchSize;
+}
+
+void NN::addTrainingSetTest(){
+	
+	for (int i = 0; i < inputs; i++) {
+		inputSet[i] = round((float)rand() / (float)RAND_MAX);
+	}
+	//setup output set
+	//outputSet[0] = inputSet[2] * 0.5 + inputSet[1] * 0.25;
+	//outputSet[1] = inputSet[0] * 0.5 + inputSet[2] * 0.25;
+	//outputSet[2] = inputSet[1] * 0.5 + inputSet[0] * 0.25;
+
+	for (int i = 0; i < outputs; i++) {
+		if (i == outputs - 1) {
+			outputSet[i] = inputSet[0];
+		}
+		else {
+			outputSet[i] = inputSet[i + 1];
+		}
+	}
+	addTrainingSet(inputSet, outputSet);
+}
+
+void NN::clearBatchGradient(){
+	for (int i = 0; i < layers - 1; i++) {
+		for (int j = 0; j < perLayer; j++) {
+			for (int k = 0; k < perLayer; k++) {
+				batchDErrorDConnections[i][j][k] = 0;
+			}
+		}
+	}
+}
+
+void NN::perturb(){
+	for (int i = 0; i < layers - 1; i++) {
+		for (int j = 0; j < perLayer; j++) {
+			for (int k = 0; k < perLayer; k++) {
+				if (connections[i][j][k] < 0.01) {
+					connections[i][j][k] += 0.15+0.4*((float)rand() / (float)RAND_MAX);
+				}
+			}
+		}
+	}
 }
