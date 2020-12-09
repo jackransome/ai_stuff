@@ -3,6 +3,7 @@
 #include <iostream>
 #include <time.h>
 #include <math.h>
+#include <algorithm>
 
 NN::NN()
 {
@@ -47,7 +48,7 @@ void NN::back(int _layer, int _index, int _nodeInPrevLayerIndex) {
 
 void NN::changeWeightsBasedOnBatchGradients(float _learningFactor) {
 	double magnitude = 0;
-	for (int i = 0; i < layers; i++) {
+	for (int i = 0; i < layers-1; i++) {
 		for (int j = 0; j < perLayer; j++) {
 			for (int k = 0; k < perLayer; k++) {
 				magnitude += pow(batchDErrorDConnections[i][j][k], 2);
@@ -56,7 +57,7 @@ void NN::changeWeightsBasedOnBatchGradients(float _learningFactor) {
 	}
 	magnitude = sqrt(magnitude);
 	//changing weights based on batch gradients:
-	for (int i = 0; i < layers; i++) {
+	for (int i = 0; i < layers-1; i++) {
 		for (int j = 0; j < perLayer; j++) {
 			for (int k = 0; k < perLayer; k++) {
 
@@ -72,7 +73,7 @@ void NN::changeWeightsBasedOnBatchGradients(float _learningFactor) {
 
 float NN::addGradientsBasedOnWeights() {
 	//clearing dErrorDConnections
-	for (int i = 0; i < layers; i++) {
+	for (int i = 0; i < layers-1; i++) {
 		for (int j = 0; j < perLayer; j++) {
 			for (int k = 0; k < perLayer; k++) {
 				dErrorDConnections[i][j][k] = 0;
@@ -116,7 +117,7 @@ float NN::addGradientsBasedOnWeights() {
 		}
 	}
 	//adding the gradients for this case to the batch:
-	for (int i = 0; i < layers; i++) {
+	for (int i = 0; i < layers-1; i++) {
 		for (int j = 0; j < perLayer; j++) {
 			for (int k = 0; k < perLayer; k++) {
 				batchDErrorDConnections[i][j][k] += dErrorDConnections[i][j][k];
@@ -126,14 +127,76 @@ float NN::addGradientsBasedOnWeights() {
 	return totalError;
 }
 
-void NN::init()
+void NN::init(int _inputs, int _layers, int _perLayer, int _outputs)
 {
+	inputs = _inputs;
+	layers = _layers;
+	perLayer = _perLayer;
+	outputs = _outputs;
+	int perLayerDimension = std::max(std::max(perLayer, inputs), outputs);
+	//allocating errors memory:
+	errors = (double*)malloc(outputs * sizeof(double));
+	//allocating outputSet memory:
+	outputSet = (double*)malloc(outputs * sizeof(double));
+	//allocating inputSet memory:
+	inputSet = (double*)malloc(inputs * sizeof(double));
+	//allocating nodes memory
+	nodes = (Node**)malloc(layers*(sizeof(Node*)));
+	for (int i = 0; i < layers; i++) {
+		nodes[i] = (Node*)malloc(perLayer * sizeof(Node));
+		for (int j = 0; j < perLayerDimension; j++) {
+			//setting up nodes as existing or not depending on different numbers of inputs outputs and amount of nodes in hidden layers
+			if (i == 0) {
+				if (j < inputs) {
+					nodes[i][j].exists = true;
+				}
+				else {
+					nodes[i][j].exists = false;
+				}
+			}
+			else if (i == layers - 1) {
+				if (j < outputs) {
+					nodes[i][j].exists = true;
+				}
+				else {
+					nodes[i][j].exists = false;
+				}
+			}
+			else {
+				if (j < perLayer) {
+					nodes[i][j].exists = true;
+				}
+				else {
+					nodes[i][j].exists = false;
+				}
+			}
+		}
+	}
 	//seeding rand()
 	srand(time(NULL));
-	//setting all connection weights to random between 0 and 1
-	for (int i = 0; i < layers; i++) {
-		for (int j = 0; j < perLayer; j++) {
-			for (int k = 0; k < perLayer; k++) {
+	//allocating dErrorDConnections memory
+	dErrorDConnections = (double***)malloc((layers-1) * sizeof(double**));
+	for (int i = 0; i < layers-1; i++) {
+		dErrorDConnections[i] = (double**)malloc(perLayerDimension * sizeof(double));
+		for (int j = 0; j < perLayerDimension; j++) {
+			dErrorDConnections[i][j] = (double*)malloc(perLayerDimension * sizeof(double));
+		}
+	}
+	//allocating batchDErrorDConnections memory
+	batchDErrorDConnections = (double***)malloc((layers - 1) * sizeof(double**));
+	for (int i = 0; i < layers - 1; i++) {
+		batchDErrorDConnections[i] = (double**)malloc(perLayerDimension * sizeof(double));
+		for (int j = 0; j < perLayerDimension; j++) {
+			batchDErrorDConnections[i][j] = (double*)malloc(perLayerDimension * sizeof(double));
+		}
+	}
+	//allocating connections memory and setting all weights to random between 0 and 1
+	connections = (double***)malloc((layers-1) * sizeof(double**));
+	for (int i = 0; i < layers-1; i++) {
+		connections[i] = (double**)malloc(perLayerDimension * sizeof(double*));
+		for (int j = 0; j < perLayerDimension; j++) {
+			connections[i][j] = (double*)malloc(perLayerDimension * sizeof(double));
+			for (int k = 0; k < perLayerDimension; k++) {
 				connections[i][j][k] = ((float)rand() / (float)RAND_MAX);
 			}
 		}
@@ -158,7 +221,7 @@ void NN::trainNetwork() {
 	int batchSize = 1000;
 	
 	//clearing the batch gradient
-	for (int i = 0; i < layers; i++) {
+	for (int i = 0; i < layers-1; i++) {
 		for (int j = 0; j < perLayer; j++) {
 			for (int k = 0; k < perLayer; k++) {
 				batchDErrorDConnections[i][j][k] = 0;

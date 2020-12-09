@@ -9,34 +9,32 @@ struct Node
 	double dedv;
 };
 
-const int inputs = 6;
-const int layers = 2;
-const int perLayer = 6; //must be > inputs at the moment due to size of Node.fromConnections being defined as perLay
-const int outputs = 6;
 
 class NN {
 public:
 	NN();
 
+	int inputs;
+	int layers;
+	int perLayer; //must be > inputs at the moment due to size of Node.fromConnections being defined as perLay
+	int outputs;
 
 	// neuron 2 in layer 1 connects to a neuron 3 in layer 2 by connections[1][2][3]
 	// input layer is layer 0
 	// output layer is layer layers-1
-	double connections[layers - 1][perLayer][perLayer];
+	double ***connections;// [layers - 1][perLayer][perLayer];
 
-	double dErrorDConnections[layers][perLayer][perLayer];
-	double batchDErrorDConnections[layers][perLayer][perLayer];
+	double ***dErrorDConnections;
+	double ***batchDErrorDConnections;
 
-	float errors[outputs];
+	double *errors;
 
-	float inputSet[inputs];
+	double *inputSet;
 
-	float outputSet[outputs];
-
-	float learningFactor = 1 / (layers*perLayer*perLayer);
+	double *outputSet;
 
 	// same way to access as connections, just missing the index of the next layers neurons
-	Node nodes[layers][perLayer];
+	Node **nodes;
 
 	void forward(int _layer, int _index);
 	
@@ -46,9 +44,15 @@ public:
 
 	float addGradientsBasedOnWeights();
 
-	void init();
+	void init(int _inputs, int _layers, int _perLayer, int _outputs);
 
 	void trainNetwork();
+
+	void addTrainingSet();
+
+	void clearTrainingSets();
+
+	void trainOnCachedSets();
 
 	float test();
 

@@ -50,7 +50,7 @@ void MainGame::initSystems() {
 	_camera.setScreenShakeIntensity(0);
 
 	nn = NN();
-	nn.init();
+	nn.init(6, 6, 6, 6);
 }
 
 void MainGame::initShaders() {
@@ -141,7 +141,7 @@ void MainGame::processInput() {
 		}
 	}
 	if (_inputManager.isKeyPressed(SDLK_f)) {
-		nn.init();
+		nn.init(6, ((float)rand() / (float)RAND_MAX)*10+2, 6, 6);
 	}
 }
 
@@ -189,18 +189,18 @@ void MainGame::drawGame() {
 	//DRAW THE NETWORK:
 	//(STILL HAVE TO COPY IN THE NN CODE FROM THE OTHER PROJ)
 	nn.trainNetwork();
-	for (int i = 0; i < layers - 1; i++) {
-		for (int j = 0; j < perLayer; j++) { //the previous
-			for (int k = 0; k < perLayer; k++) { //the current
+	for (int i = 0; i < nn.layers - 1; i++) {
+		for (int j = 0; j < nn.perLayer; j++) { //the previous
+			for (int k = 0; k < nn.perLayer; k++) { //the current
 				if (!(nn.nodes[i][j].exists && nn.nodes[i + 1][k].exists)) {
 					//spriteBatch.drawLine(glm::vec2(i * 100, j * 10 - 30), glm::vec2(i * 100 + 100, k * 10 - 30), 255, 0, 0, NULL, 1);
 				}
 				else {
 					if (nn.connections[i][j][k] > 1) {
-						spriteBatch.drawLine(glm::vec2(i * 150, j * 15 - 30), glm::vec2(i * 150 + 150, k * 15 - 30), 0/*nn.dErrorDConnections[i][j][k] * 255*/, 255, 0, NULL, 1);
+						spriteBatch.drawLine(glm::vec2(i * 100-200, j * 15 - 30), glm::vec2(i * 100 - 100, k * 15 - 30), 0/*nn.dErrorDConnections[i][j][k] * 255*/, 255, 0, NULL, 1);
 					}
 					else {
-						spriteBatch.drawLine(glm::vec2(i * 150, j * 15 - 30), glm::vec2(i * 150 + 150, k * 15 - 30), 0/*nn.dErrorDConnections[i][j][k] * 255*/, nn.connections[i][j][k] * 255, 0, NULL, 1);
+						spriteBatch.drawLine(glm::vec2(i * 100-200, j * 15 - 30), glm::vec2(i * 100 - 100, k * 15 - 30), 0/*nn.dErrorDConnections[i][j][k] * 255*/, nn.connections[i][j][k] * 255, 0, NULL, 1);
 					}
 				}
 				
@@ -208,11 +208,11 @@ void MainGame::drawGame() {
 
 		}
 	}
-	for (int i = 0; i < layers; i++) {
-		for (int j = 0; j < perLayer; j++) { //the previous
-			for (int k = 0; k < perLayer; k++) { //the current
-				if (i == 0 && k == inputs) break;
-				if (i == layers - 1 && k == outputs) break;
+	for (int i = 0; i < nn.layers; i++) {
+		for (int j = 0; j < nn.perLayer; j++) { //the previous
+			for (int k = 0; k < nn.perLayer; k++) { //the current
+				if (i == 0 && k == nn.inputs) break;
+				if (i == nn.layers - 1 && k == nn.outputs) break;
 				//spriteBatch.drawLine(glm::vec2(i * 100, j * 100 + - 500), glm::vec2(i * 100 + 100, k * 100 - 500), nn.dErrorDConnections[i][j][k] * 255, 0, 0, NULL, 1);
 			}
 

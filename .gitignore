@@ -34,3 +34,5 @@ neuralNetworkTest1/.vs/neuralNetworkTest1/v15/Browse.VC.opendb
 neuralNetworkTest1/.vs/neuralNetworkTest1/v15/Browse.VC.db
 neuralNetworkTest1/.vs/neuralNetworkTest1/v15/Browse.VC.db
 *.db
+*.db
+*.opendb
