@@ -40,7 +40,10 @@ public:
 private:
 
 	NN nn;
-	
+	int gradientGraph[100];
+	int gradientIndex = 0;
+	float errorGraph[100];
+	int errorIndex = 0;
 	int closestNodeToPlayerIndex;
 
 	bool playerNodeHasChanged;

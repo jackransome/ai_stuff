@@ -50,7 +50,10 @@ void MainGame::initSystems() {
 	_camera.setScreenShakeIntensity(0);
 
 	nn = NN();
-	nn.init(6, 6, 6, 6);
+	nn.init(4, 3, 64, 7);
+	for (int i = 0; i < 100; i++) {
+		gradientGraph[i] = 0;
+	}
 }
 
 void MainGame::initShaders() {
@@ -141,7 +144,7 @@ void MainGame::processInput() {
 		}
 	}
 	if (_inputManager.isKeyPressed(SDLK_f)) {
-		nn.init(6,/* ((float)rand() / (float)RAND_MAX)*10+*/6, 6, 6);
+		nn.init(4, 3, 32, 7);
 	}
 	if (_inputManager.isKeyPressed(SDLK_g)) {
 		if (!lastg) {
@@ -158,7 +161,7 @@ void MainGame::processInput() {
 		nn.perturb();
 	}
 	if (_inputManager.isKeyPressed(SDLK_j)) {
-		std::cout << "Last gradient magnitude: " << nn.lastGradientMagnitude << "\n";
+		std::cout << "Last gradient magnitude: " << nn.getLast5MagnitudesAverage() << "\n";
 		
 	}
 }
@@ -219,11 +222,17 @@ void MainGame::drawGame() {
 					//spriteBatch.drawLine(glm::vec2(i * 100, j * 10 - 30), glm::vec2(i * 100 + 100, k * 10 - 30), 255, 0, 0, NULL, 1);
 				}
 				else {
-					if (nn.connections[i][j][k] > 1) {
-						spriteBatch.drawLine(glm::vec2(i * 100-200, j * 15 - 30), glm::vec2(i * 100 - 100, k * 15 - 30), 0/*nn.dErrorDConnections[i][j][k] * 255*/, 255, 0, NULL, 1);
+					if (nn.connections[i][j][k] < 0) {
+						spriteBatch.drawLine(glm::vec2(i * 100 - 500, j * 15 - 100), glm::vec2(i * 100 - 400, k * 15 - 100), nn.connections[i][j][k] * 255, 0, 0, NULL, 1);
+					}
+					else if (nn.connections[i][j][k] < -1) {
+						spriteBatch.drawLine(glm::vec2(i * 100 - 500, j * 15 - 100), glm::vec2(i * 100 - 400, k * 15 - 100), 255, 0, 0, NULL, 1);
+					}
+					else if (nn.connections[i][j][k] > 1) {
+						spriteBatch.drawLine(glm::vec2(i * 100 - 500, j * 15 - 100), glm::vec2(i * 100 - 400, k * 15 - 100), 0/*nn.dErrorDConnections[i][j][k] * 255*/, 255, 0, NULL, 1);
 					}
 					else {
-						spriteBatch.drawLine(glm::vec2(i * 100-200, j * 15 - 30), glm::vec2(i * 100 - 100, k * 15 - 30), 0/*nn.dErrorDConnections[i][j][k] * 255*/, nn.connections[i][j][k] * 255, 0, NULL, 1);
+						spriteBatch.drawLine(glm::vec2(i * 100 - 500, j * 15 - 100), glm::vec2(i * 100 - 400, k * 15 - 100), 0/*nn.dErrorDConnections[i][j][k] * 255*/, nn.connections[i][j][k] * 255, 0, NULL, 1);
 					}
 				}
 				
@@ -241,10 +250,29 @@ void MainGame::drawGame() {
 
 		}
 	}
+
+	gradientIndex++;
+	if (gradientIndex == 100) {
+		gradientIndex = 0;
+	}
+	gradientGraph[gradientIndex] = nn.getLast5MagnitudesAverage();
+	errorIndex++;
+	if (errorIndex == 100) {
+		errorIndex = 0;
+	}
+	errorGraph[errorIndex] = nn.getLast5ErrorsAverage();
+
+	for (int i = 0; i < 99; i++) {
+		spriteBatch.drawLine(glm::vec2((i) * 5 - 200, gradientGraph[i] - 300), glm::vec2((i+1) * 5 - 200, gradientGraph[i+1] - 300), 0, 0, 255, NULL, 1);
+	}
+	for (int i = 0; i < 99; i++) {
+		spriteBatch.drawLine(glm::vec2((i) * 5 - 200, errorGraph[i]*20 - 300), glm::vec2((i + 1) * 5 - 200, errorGraph[i + 1]*20 - 300), 255, 0, 0, NULL, 1);
+	}
+	spriteBatch.drawLine(glm::vec2(- 200, -300), glm::vec2(300, - 300), 255, 255, 255, NULL, 1);
 	//colour.r = nn.test() * 5;
 	colour.g = 0;
 	colour.b = 0;
-	spriteBatch.draw(glm::vec4(-300, 50, 50, 50), glm::vec4(0, 0, 0, 0), NULL, 1, colour);
+	//spriteBatch.draw(glm::vec4(-300, 50, 50, 50), glm::vec4(0, 0, 0, 0), NULL, 1, colour);
 
 	spriteBatch.end();
 

@@ -57,6 +57,11 @@ void NN::changeWeightsBasedOnBatchGradients(float _learningFactor) {
 	}
 	magnitude = sqrt(magnitude);
 	lastGradientMagnitude = magnitude;
+	magnitudeCounter++;
+	if (magnitudeCounter == 5) {
+		magnitudeCounter = 0;
+	}
+	last5Magnitudes[magnitudeCounter] = lastGradientMagnitude;
 	//changing weights based on batch gradients:
 	for (int i = 0; i < layers-1; i++) {
 		for (int j = 0; j < perLayer; j++) {
@@ -66,7 +71,8 @@ void NN::changeWeightsBasedOnBatchGradients(float _learningFactor) {
 				//batchDErrorDConnections[i][j][k] / gradientTotal is the percentage of that learning factor to be used
 				double x = 1.0f - _learningFactor * (batchDErrorDConnections[i][j][k] / magnitude);
 				double old = connections[i][j][k];
-				connections[i][j][k] = connections[i][j][k] * x;
+				//connections[i][j][k] = connections[i][j][k] * x;
+				connections[i][j][k] = connections[i][j][k] - _learningFactor * (batchDErrorDConnections[i][j][k] / magnitude);
 			}
 		}
 	}
@@ -280,17 +286,29 @@ void NN::clearTrainingSets(){
 void NN::trainOnCachedSets(){
 	clearBatchGradient();
 	double error = 0;
+	double singleError;
+	bool toPerturb = false;
 	for (int i = 0; i < numberOfCachedSets; i++) {
-		error += addGradientFromCachedSet(i);
+		singleError = addGradientFromCachedSet(i);
+		error += singleError;
+		if (singleError > 0.5 && counter > 1000) {
+			toPerturb = true;
+		}
 	}
-	counter++;
-	//std::cout << "avg err: " << error << "\n";
-	if (error / numberOfCachedSets > 0.2 && counter > 600) {
-		std::cout << "error: " << error/ numberOfCachedSets << "\n";
+	if (toPerturb) {
+		std::cout << "error: " << error / numberOfCachedSets << "\n";
 		perturb();
 		counter = 0;
 	}
-	changeWeightsBasedOnBatchGradients(0.4);
+	counter++;
+	//std::cout << "avg err: " << error << "\n";
+	errorCounter++;
+	if (errorCounter == 5) {
+		errorCounter = 0;
+	}
+	last5Errors[errorCounter] = error / numberOfCachedSets;
+
+	changeWeightsBasedOnBatchGradients(0.05);
 }
 
 double NN::addGradientFromCachedSet(int _index){
@@ -322,6 +340,7 @@ float NN::test(){
 		}
 		//adding the gradients for this batch
 		//error = (error * m + addGradientsBasedOnWeights())/(m +1);
+		getBinaryTrainingSet();
 		error += addGradientsBasedOnWeights();
 
 	}
@@ -330,6 +349,45 @@ float NN::test(){
 	}
 	
 	return error / batchSize;
+}
+
+void NN::getBinaryTrainingSet() {
+	int input1 = round(3*((float)rand() / (float)RAND_MAX));
+	int input2 = round(3 * ((float)rand() / (float)RAND_MAX));
+	if (((float)rand() / (float)RAND_MAX) > 0.8) {
+		input1 = input2 = 3;
+	}
+	int output = input1 + input2;
+	inputSet[0] = 1 & input1;
+	inputSet[1] = (2 & input1) > 0;
+	inputSet[2] = 1 & input2;
+	inputSet[3] = (2 & input2) > 0;
+	outputSet[0] = 0;
+	outputSet[1] = 0;
+	outputSet[2] = 0;
+	outputSet[3] = 0;
+	outputSet[4] = 0;
+	outputSet[5] = 0;
+	outputSet[6] = 0;
+	outputSet[output] = 1;
+}
+
+int NN::getLast5MagnitudesAverage()
+{
+	int total = 0;
+	for (int i = 0; i < 5; i++) {
+		total += last5Magnitudes[i];
+	}
+	return total / 5;
+}
+
+float NN::getLast5ErrorsAverage()
+{
+	float total = 0;
+	for (int i = 0; i < 5; i++) {
+		total += last5Errors[i];
+	}
+	return total / 5;
 }
 
 void NN::addTrainingSetTest(){
@@ -342,14 +400,15 @@ void NN::addTrainingSetTest(){
 	//outputSet[1] = inputSet[0] * 0.5 + inputSet[2] * 0.25;
 	//outputSet[2] = inputSet[1] * 0.5 + inputSet[0] * 0.25;
 
-	for (int i = 0; i < outputs; i++) {
+	/*for (int i = 0; i < outputs; i++) {
 		if (i == outputs - 1) {
 			outputSet[i] = inputSet[0];
 		}
 		else {
 			outputSet[i] = inputSet[i + 1];
 		}
-	}
+	}*/
+	getBinaryTrainingSet();
 	addTrainingSet(inputSet, outputSet);
 }
 
@@ -368,7 +427,7 @@ void NN::perturb(){
 		for (int j = 0; j < perLayer; j++) {
 			for (int k = 0; k < perLayer; k++) {
 				if (connections[i][j][k] < 0.01) {
-					connections[i][j][k] += 0.15+0.4*((float)rand() / (float)RAND_MAX);
+					connections[i][j][k] += -0.2+0.4*((float)rand() / (float)RAND_MAX);
 				}
 			}
 		}

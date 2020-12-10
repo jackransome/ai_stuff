@@ -23,6 +23,12 @@ public:
 	int perLayer; //must be > inputs at the moment due to size of Node.fromConnections being defined as perLay
 	int outputs;
 
+	int last5Magnitudes[5];
+	int magnitudeCounter = 0;
+
+	float last5Errors[5];
+	int errorCounter = 0;
+
 	// neuron 2 in layer 1 connects to a neuron 3 in layer 2 by connections[1][2][3]
 	// input layer is layer 0
 	// output layer is layer layers-1
@@ -75,6 +81,12 @@ public:
 	void clearBatchGradient();
 
 	void perturb();
+
+	void getBinaryTrainingSet();
+
+	int getLast5MagnitudesAverage();
+
+	float getLast5ErrorsAverage();
 
 private:
 
