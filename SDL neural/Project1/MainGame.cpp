@@ -50,7 +50,7 @@ void MainGame::initSystems() {
 	_camera.setScreenShakeIntensity(0);
 
 	nn = NN();
-	nn.init(4, 3, 64, 7);
+	nn.init(4, 4, 32, 3);
 	for (int i = 0; i < 100; i++) {
 		gradientGraph[i] = 0;
 	}
@@ -144,7 +144,7 @@ void MainGame::processInput() {
 		}
 	}
 	if (_inputManager.isKeyPressed(SDLK_f)) {
-		nn.init(4, 3, 32, 7);
+		nn.init(4, 4, 32, 3);
 	}
 	if (_inputManager.isKeyPressed(SDLK_g)) {
 		if (!lastg) {

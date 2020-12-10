@@ -212,7 +212,7 @@ void NN::init(int _inputs, int _layers, int _perLayer, int _outputs)
 		for (int j = 0; j < perLayerDimension; j++) {
 			connections[i][j] = (double*)malloc(perLayerDimension * sizeof(double));
 			for (int k = 0; k < perLayerDimension; k++) {
-				connections[i][j][k] = ((float)rand() / (float)RAND_MAX);
+				connections[i][j][k] = -0.5 + 1 * ((float)rand() / (float)RAND_MAX);
 			}
 		}
 	}
@@ -291,7 +291,7 @@ void NN::trainOnCachedSets(){
 	for (int i = 0; i < numberOfCachedSets; i++) {
 		singleError = addGradientFromCachedSet(i);
 		error += singleError;
-		if (singleError > 0.5 && counter > 1000) {
+		if (singleError > 0.5 && counter > 1400) {
 			toPerturb = true;
 		}
 	}
@@ -308,7 +308,7 @@ void NN::trainOnCachedSets(){
 	}
 	last5Errors[errorCounter] = error / numberOfCachedSets;
 
-	changeWeightsBasedOnBatchGradients(0.05);
+	changeWeightsBasedOnBatchGradients(0.02);
 }
 
 double NN::addGradientFromCachedSet(int _index){
@@ -354,22 +354,22 @@ float NN::test(){
 void NN::getBinaryTrainingSet() {
 	int input1 = round(3*((float)rand() / (float)RAND_MAX));
 	int input2 = round(3 * ((float)rand() / (float)RAND_MAX));
-	if (((float)rand() / (float)RAND_MAX) > 0.8) {
-		input1 = input2 = 3;
+	if (((float)rand() / (float)RAND_MAX) > 0.9) {
+		if (((float)rand() / (float)RAND_MAX) > 0.5) {
+			input1 = input2 = 0;
+		}
+		else {
+			input1 = input2 = 3;
+		}
 	}
 	int output = input1 + input2;
 	inputSet[0] = 1 & input1;
 	inputSet[1] = (2 & input1) > 0;
 	inputSet[2] = 1 & input2;
 	inputSet[3] = (2 & input2) > 0;
-	outputSet[0] = 0;
-	outputSet[1] = 0;
-	outputSet[2] = 0;
-	outputSet[3] = 0;
-	outputSet[4] = 0;
-	outputSet[5] = 0;
-	outputSet[6] = 0;
-	outputSet[output] = 1;
+	outputSet[0] = 1 & output;
+	outputSet[1] = (2 & output) > 0;
+	outputSet[2] = (4 & output) > 0;
 }
 
 int NN::getLast5MagnitudesAverage()
@@ -426,9 +426,9 @@ void NN::perturb(){
 	for (int i = 0; i < layers - 1; i++) {
 		for (int j = 0; j < perLayer; j++) {
 			for (int k = 0; k < perLayer; k++) {
-				if (connections[i][j][k] < 0.01) {
-					connections[i][j][k] += -0.2+0.4*((float)rand() / (float)RAND_MAX);
-				}
+				//if (connections[i][j][k] < 0.01) {
+					connections[i][j][k] += -0.15+0.3*((float)rand() / (float)RAND_MAX);
+				//}
 			}
 		}
 	}

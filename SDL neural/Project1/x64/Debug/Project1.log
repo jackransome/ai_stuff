@@ -1,12 +1,7 @@
-﻿  NN.cpp
-c:\users\jack\documents\github\ai stuff\ai_stuff\sdl neural\project1\nn.cpp(31): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\jack\documents\github\ai stuff\ai_stuff\sdl neural\project1\nn.cpp(39): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-c:\users\jack\documents\github\ai stuff\ai_stuff\sdl neural\project1\nn.cpp(64): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-c:\users\jack\documents\github\ai stuff\ai_stuff\sdl neural\project1\nn.cpp(108): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-c:\users\jack\documents\github\ai stuff\ai_stuff\sdl neural\project1\nn.cpp(191): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-c:\users\jack\documents\github\ai stuff\ai_stuff\sdl neural\project1\nn.cpp(270): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\users\jack\documents\github\ai stuff\ai_stuff\sdl neural\project1\nn.cpp(309): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\jack\documents\github\ai stuff\ai_stuff\sdl neural\project1\nn.cpp(311): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\users\jack\documents\github\ai stuff\ai_stuff\sdl neural\project1\nn.cpp(355): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-c:\users\jack\documents\github\ai stuff\ai_stuff\sdl neural\project1\nn.cpp(356): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+﻿  MainGame.cpp
+c:\users\jack\documents\github\ai stuff\ai_stuff\sdl neural\project1\maingame.cpp(40): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+c:\users\jack\documents\github\ai stuff\ai_stuff\sdl neural\project1\maingame.cpp(77): warning C4305: '+=': truncation from 'double' to 'float'
+c:\users\jack\documents\github\ai stuff\ai_stuff\sdl neural\project1\maingame.cpp(130): warning C4244: 'argument': conversion from 'Sint32' to 'float', possible loss of data
+c:\users\jack\documents\github\ai stuff\ai_stuff\sdl neural\project1\maingame.cpp(226): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\jack\documents\github\ai stuff\ai_stuff\sdl neural\project1\maingame.cpp(235): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
   Project1.vcxproj -> C:\Users\Jack\Documents\GitHub\ai stuff\ai_stuff\SDL neural\x64\Debug\Game.exe
