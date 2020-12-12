@@ -50,7 +50,7 @@ void MainGame::initSystems() {
 	_camera.setScreenShakeIntensity(0);
 
 	nn = NN();
-	nn.init(4, 3, 32, 7);
+	nn.init(4, 8, 8, 7);
 	for (int i = 0; i < 100; i++) {
 		gradientGraph[i] = 0;
 	}
@@ -144,7 +144,7 @@ void MainGame::processInput() {
 		}
 	}
 	if (_inputManager.isKeyPressed(SDLK_f)) {
-		nn.init(4, 4, 32, 3);
+		nn.init(4, 3, 16, 7);
 	}
 	if (_inputManager.isKeyPressed(SDLK_g)) {
 		if (!lastg) {
@@ -162,7 +162,9 @@ void MainGame::processInput() {
 	}
 	if (_inputManager.isKeyPressed(SDLK_j)) {
 		std::cout << "Last gradient magnitude: " << nn.getLast5MagnitudesAverage() << "\n";
-		
+	}
+	if (_inputManager.isKeyPressed(SDLK_t)) {
+		nn.doTestSet();
 	}
 }
 
@@ -238,6 +240,34 @@ void MainGame::drawGame() {
 				
 			}
 
+		}
+	}
+	for (int i = 0; i < nn.layers; i++) {
+		for (int j = 0; j < nn.perLayer; j++) {
+			if (nn.nodes[i][j].exists) {
+				if (nn.nodes[i][j].bias > 0) {
+					colour.r = 0;
+					if (nn.nodes[i][j].bias * 10000 > 255) {
+						colour.g = 255;
+					}
+					else {
+						colour.g = nn.nodes[i][j].bias * 10000;
+					}
+					colour.b = 100;
+				}
+				else {
+					if (-nn.nodes[i][j].bias * 10000 > 255) {
+						colour.r = 255;
+					}
+					else {
+						colour.r = -nn.nodes[i][j].bias * 10000;
+					}
+					colour.g = 0;
+					colour.b = 100;
+				}
+
+				spriteBatch.draw(glm::vec4(i * 100 - 500, j * 15 - 100, 5, 5), glm::vec4(0, 0, 0, 0), NULL, 1, colour);
+			}
 		}
 	}
 	for (int i = 0; i < nn.layers; i++) {

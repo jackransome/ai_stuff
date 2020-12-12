@@ -27,7 +27,7 @@ public:
 
 	int last5Magnitudes[5];
 	int magnitudeCounter = 0;
-
+	bool stopLearning = false;
 	float last5Errors[5];
 	int errorCounter = 0;
 
@@ -90,6 +90,10 @@ public:
 	int getLast5MagnitudesAverage();
 
 	float getLast5ErrorsAverage();
+
+	void doTestSet();
+
+	void run();
 
 private:
 

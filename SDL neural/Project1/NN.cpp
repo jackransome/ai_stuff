@@ -103,16 +103,7 @@ float NN::addGradientsBasedOnWeights() {
 			}
 		}
 	}
-	//setting first layer to the input set
-	for (int i = 0; i < inputs; i++) {
-		nodes[0][i].value = inputSet[i];
-	}
-	// looping from first(input) layer to last non output layer and running forward() on each
-	for (int i = 1; i < layers; i++) {
-		for (int j = 0; j < perLayer; j++) {
-			forward(i, j);
-		}
-	}
+	run();
 	// calculating the error for each output based on the calculated output layer values and the output set
 	for (int i = 0; i < outputs; i++) {
 		errors[i] = pow(outputSet[i] - nodes[layers - 1][i].value, 2);
@@ -314,6 +305,9 @@ void NN::clearTrainingSets(){
 }
 
 void NN::trainOnCachedSets(){
+	if (stopLearning) {
+		return;
+	}
 	clearBatchGradient();
 	double error = 0;
 	double singleError;
@@ -478,4 +472,48 @@ void NN::perturb(){
 			}
 		}
 	}
+}
+
+void NN::run() {
+	//setting first layer to the input set
+	for (int i = 0; i < inputs; i++) {
+		nodes[0][i].value = inputSet[i];
+	}
+	// looping from first(input) layer to last non output layer and running forward() on each
+	for (int i = 1; i < layers; i++) {
+		for (int j = 0; j < perLayer; j++) {
+			forward(i, j);
+		}
+	}
+}
+
+void NN::doTestSet() {
+	int mistakes = 0;
+	int batchSize = 100;
+	for (int m = 0; m < batchSize; m++) {
+		getBinaryTrainingSet();
+		run();
+		//check if largest output in the last layer if the same one that is largest in the output set
+		int nnIndex = 0;
+		for (int i = 1; i < outputs; i++) {
+			if (nodes[layers - 1][i].value > nodes[layers - 1][nnIndex].value) {
+				nnIndex = i;
+			}
+		}
+		int setIndex = 0;
+		for (int i = 1; i < outputs; i++) {
+			if (outputSet[i] > outputSet[setIndex]) {
+				setIndex = i;
+			}
+		}
+		//if incorrect answer:
+		if (setIndex != nnIndex) {
+			mistakes++;
+		}
+	}
+	float percentage = (float)(batchSize - mistakes) / (float)batchSize;
+	if (percentage == 1) {
+		stopLearning = true;
+	}
+	std::cout << mistakes << " wrong out of " << batchSize << " runs: " << 100*percentage << "% correct\n";
 }
