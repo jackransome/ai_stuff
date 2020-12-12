@@ -16,7 +16,7 @@ void NN::forward(int _layer, int _index) {
 		if (!nodes[_layer - 1][i].exists) {
 			break;
 		}
-		nodes[_layer][_index].value += nodes[_layer - 1][i].value * connections[_layer - 1][i][_index];
+		nodes[_layer][_index].value += nodes[_layer - 1][i].value * connections[_layer - 1][i][_index] + nodes[_layer][_index].bias;
 	}
 	//clamping to 0
 	if (nodes[_layer][_index].value < 0) {
@@ -55,6 +55,14 @@ void NN::changeWeightsBasedOnBatchGradients(float _learningFactor) {
 			}
 		}
 	}
+	for (int i = 1; i < layers - 1; i++) {
+		for (int j = 0; j < perLayer; j++) {
+			if (nodes[i][j].exists) {
+				magnitude += pow(nodes[i][j].dedv, 2);
+			}
+		}
+	}
+
 	magnitude = sqrt(magnitude);
 	lastGradientMagnitude = magnitude;
 	magnitudeCounter++;
@@ -73,6 +81,14 @@ void NN::changeWeightsBasedOnBatchGradients(float _learningFactor) {
 				double old = connections[i][j][k];
 				//connections[i][j][k] = connections[i][j][k] * x;
 				connections[i][j][k] = connections[i][j][k] - _learningFactor * (batchDErrorDConnections[i][j][k] / magnitude);
+			}
+		}
+	}
+	//changing biases based on batch gradients
+	for (int i = 1; i < layers - 1; i++) {
+		for (int j = 0; j < perLayer; j++) {
+			if (nodes[i][j].exists) {
+				nodes[i][j].bias = nodes[i][j].bias  -_learningFactor * (batchDErrorDBiases[i][j] / magnitude);
 			}
 		}
 	}
@@ -132,6 +148,14 @@ float NN::addGradientsBasedOnWeights() {
 			}
 		}
 	}
+	//adding biase gradients to the batch
+	for (int i = 1; i < layers; i++) {
+		for (int j = 0; j < perLayerDimension; j++) {
+			if (nodes[i][j].exists) {
+				batchDErrorDBiases[i][j] += nodes[i][j].dedv;
+			}
+		}
+	}
 	return totalError;
 }
 
@@ -148,7 +172,7 @@ void NN::init(int _inputs, int _layers, int _perLayer, int _outputs)
 	cachedOutputs = (double**)malloc(maxCachedSets*outputs * sizeof(double*));
 
 
-	int perLayerDimension = std::max(std::max(perLayer, inputs), outputs);
+	perLayerDimension = std::max(std::max(perLayer, inputs), outputs);
 	//allocating errors memory:
 	errors = (double*)malloc(outputs * sizeof(double));
 	//allocating outputSet memory:
@@ -160,6 +184,7 @@ void NN::init(int _inputs, int _layers, int _perLayer, int _outputs)
 	for (int i = 0; i < layers; i++) {
 		nodes[i] = (Node*)malloc(perLayer * sizeof(Node));
 		for (int j = 0; j < perLayerDimension; j++) {
+			nodes[i][j].bias = 0;
 			//setting up nodes as existing or not depending on different numbers of inputs outputs and amount of nodes in hidden layers
 			if (i == 0) {
 				if (j < inputs) {
@@ -186,6 +211,11 @@ void NN::init(int _inputs, int _layers, int _perLayer, int _outputs)
 				}
 			}
 		}
+	}
+	//allocating batchDErrorDBiases memory:
+	batchDErrorDBiases = (double**)malloc(layers*(sizeof(double*)));
+	for (int i = 0; i < layers; i++) {
+		batchDErrorDBiases[i] = (double*)malloc(perLayerDimension * sizeof(double));
 	}
 	//seeding rand()
 	srand(time(NULL));
@@ -367,9 +397,18 @@ void NN::getBinaryTrainingSet() {
 	inputSet[1] = (2 & input1) > 0;
 	inputSet[2] = 1 & input2;
 	inputSet[3] = (2 & input2) > 0;
-	outputSet[0] = 1 & output;
-	outputSet[1] = (2 & output) > 0;
-	outputSet[2] = (4 & output) > 0;
+	//outputSet[0] = 1 & output;
+	//outputSet[1] = (2 & output) > 0;
+	//outputSet[2] = (4 & output) > 0;
+	outputSet[0] = 0;
+	outputSet[1] = 0;
+	outputSet[2] = 0;
+	outputSet[3] = 0;
+	outputSet[4] = 0;
+	outputSet[5] = 0;
+	outputSet[6] = 0;
+	outputSet[output] = 1;
+
 }
 
 int NN::getLast5MagnitudesAverage()
@@ -413,11 +452,18 @@ void NN::addTrainingSetTest(){
 }
 
 void NN::clearBatchGradient(){
+	//clearing connections gradient
 	for (int i = 0; i < layers - 1; i++) {
 		for (int j = 0; j < perLayer; j++) {
 			for (int k = 0; k < perLayer; k++) {
 				batchDErrorDConnections[i][j][k] = 0;
 			}
+		}
+	}
+	//clearing biases gradient
+	for (int i = 0; i < layers; i++) {
+		for (int j = 0; j < perLayerDimension; j++) {
+			batchDErrorDBiases[i][j] = 0;
 		}
 	}
 }

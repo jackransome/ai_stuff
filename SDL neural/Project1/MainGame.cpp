@@ -50,7 +50,7 @@ void MainGame::initSystems() {
 	_camera.setScreenShakeIntensity(0);
 
 	nn = NN();
-	nn.init(4, 4, 32, 3);
+	nn.init(4, 3, 32, 7);
 	for (int i = 0; i < 100; i++) {
 		gradientGraph[i] = 0;
 	}
@@ -209,7 +209,7 @@ void MainGame::drawGame() {
 
 	//DRAW THE NETWORK:
 	//(STILL HAVE TO COPY IN THE NN CODE FROM THE OTHER PROJ)
-	for (int i = 0; i < 100; i++) {
+	for (int i = 0; i < 300; i++) {
 		nn.addTrainingSetTest();
 	}
 	nn.trainOnCachedSets();
@@ -252,6 +252,12 @@ void MainGame::drawGame() {
 	}
 
 	gradientIndex++;
+	int maxGradient = 1;
+	for (int i = 0; i < 99; i++) {
+		if (gradientGraph[i] > maxGradient) {
+			maxGradient = gradientGraph[i];
+		}			
+	}
 	if (gradientIndex == 100) {
 		gradientIndex = 0;
 	}
@@ -263,7 +269,8 @@ void MainGame::drawGame() {
 	errorGraph[errorIndex] = nn.getLast5ErrorsAverage();
 
 	for (int i = 0; i < 99; i++) {
-		spriteBatch.drawLine(glm::vec2((i) * 5 - 200, gradientGraph[i] - 300), glm::vec2((i+1) * 5 - 200, gradientGraph[i+1] - 300), 0, 0, 255, NULL, 1);
+		//spriteBatch.drawLine(glm::vec2((i) * 5 - 200, 200 * ((float)gradientGraph[i] / (float)maxGradient) - 300), glm::vec2((i + 1) * 5 - 200, 200 * ((float)gradientGraph[i + 1] / (float)maxGradient) - 300), 0, 0, 255, NULL, 1);
+		spriteBatch.drawLine(glm::vec2((i) * 5 - 200, gradientGraph[i] - 300), glm::vec2((i + 1) * 5 - 200, gradientGraph[i + 1] - 300), 0, 0, 255, NULL, 1);
 	}
 	for (int i = 0; i < 99; i++) {
 		spriteBatch.drawLine(glm::vec2((i) * 5 - 200, errorGraph[i]*20 - 300), glm::vec2((i + 1) * 5 - 200, errorGraph[i + 1]*20 - 300), 255, 0, 0, NULL, 1);

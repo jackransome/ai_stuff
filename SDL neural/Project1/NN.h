@@ -7,6 +7,7 @@ struct Node
 	bool exists; // because the input and output layers might be smaller than the hidden one
 	//d value d error
 	double dedv;
+	double bias;
 };
 
 
@@ -22,6 +23,7 @@ public:
 	int layers;
 	int perLayer; //must be > inputs at the moment due to size of Node.fromConnections being defined as perLay
 	int outputs;
+	int perLayerDimension;
 
 	int last5Magnitudes[5];
 	int magnitudeCounter = 0;
@@ -36,6 +38,7 @@ public:
 
 	double ***dErrorDConnections;
 	double ***batchDErrorDConnections;
+	double **batchDErrorDBiases;
 
 	double *errors;
 
