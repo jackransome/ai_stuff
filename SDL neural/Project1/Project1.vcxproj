@@ -21,11 +21,14 @@
   <ItemGroup>
     <ClInclude Include="MainGame.h" />
     <ClInclude Include="NN.h" />
+    <ClInclude Include="Tictactoe.h" />
+    <ClInclude Include="TrainingBoard.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainGame.cpp" />
     <ClCompile Include="NN.cpp" />
+    <ClCompile Include="Tictactoe.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\colorShading.frag" />

@@ -50,7 +50,8 @@ void MainGame::initSystems() {
 	_camera.setScreenShakeIntensity(0);
 
 	nn = NN();
-	nn.init(4, 8, 8, 7);
+	nn.init(9, 8, 8, 3);
+	tictactoe = Tictactoe();
 	for (int i = 0; i < 100; i++) {
 		gradientGraph[i] = 0;
 	}
@@ -144,7 +145,7 @@ void MainGame::processInput() {
 		}
 	}
 	if (_inputManager.isKeyPressed(SDLK_f)) {
-		nn.init(4, 3, 16, 7);
+		nn.init(4, 3, 7, 7);
 	}
 	if (_inputManager.isKeyPressed(SDLK_g)) {
 		if (!lastg) {
@@ -212,14 +213,14 @@ void MainGame::drawGame() {
 	//DRAW THE NETWORK:
 	//(STILL HAVE TO COPY IN THE NN CODE FROM THE OTHER PROJ)
 	for (int i = 0; i < 300; i++) {
-		nn.addTrainingSetTest();
+		//nn.addTrainingSetTest();
 	}
-	nn.trainOnCachedSets();
-	nn.clearTrainingSets();
+	//nn.trainOnCachedSets();
+	//nn.clearTrainingSets();
 	//nn.trainNetwork();
 	for (int i = 0; i < nn.layers - 1; i++) {
-		for (int j = 0; j < nn.perLayer; j++) { //the previous
-			for (int k = 0; k < nn.perLayer; k++) { //the current
+		for (int j = 0; j < nn.perLayerDimension; j++) { //the previous
+			for (int k = 0; k < nn.perLayerDimension; k++) { //the current
 				if (!(nn.nodes[i][j].exists && nn.nodes[i + 1][k].exists)) {
 					//spriteBatch.drawLine(glm::vec2(i * 100, j * 10 - 30), glm::vec2(i * 100 + 100, k * 10 - 30), 255, 0, 0, NULL, 1);
 				}
@@ -324,4 +325,21 @@ void MainGame::drawGame() {
 
 	//Swap our buffer and draw everything to the screen!
 	_window.swapBuffer();
+
+	int*** moves = tictactoe.getPossibleMoves();
+	int random = round(8.0f*((float)rand() / (float)RAND_MAX));
+	while (tictactoe.possibleMoves[random][0][0] == -1) {
+		random = round(8.0f*((float)rand() / (float)RAND_MAX));
+		tictactoe.getPossibleMoves();
+	}
+	tictactoe.makeMove(random);
+	//std::cout << nn.getTictactoePrediction(tictactoe.board) << " will most likely win\n";
+	if (tictactoe.timeToTrain) {
+		for (int i = 0; i < 100; i++) {
+			//std::cout << tictactoe.trainingBoards[i].winner << "\n";
+		}
+		nn.trainOnTictactoe(tictactoe.trainingBoards, tictactoe.numberOfTrainingBoards);
+		tictactoe.numberOfTrainingBoards = 0;
+		tictactoe.timeToTrain = false;
+	}
 }

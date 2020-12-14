@@ -17,6 +17,7 @@
 #include <GameEngine/DrawText.h>
 #include <GameEngine/Sound.h>
 #include "NN.h"
+#include "Tictactoe.h"
 
 enum class GameState { PLAY, EXIT };
 
@@ -40,6 +41,9 @@ public:
 private:
 
 	NN nn;
+
+	Tictactoe tictactoe;
+
 	int gradientGraph[100];
 	int gradientIndex = 0;
 	float errorGraph[100];

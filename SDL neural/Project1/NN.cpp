@@ -152,6 +152,7 @@ float NN::addGradientsBasedOnWeights() {
 
 void NN::init(int _inputs, int _layers, int _perLayer, int _outputs)
 {
+	stopLearning = false;
 	inputs = _inputs;
 	layers = _layers;
 	perLayer = _perLayer;
@@ -173,7 +174,7 @@ void NN::init(int _inputs, int _layers, int _perLayer, int _outputs)
 	//allocating nodes memory
 	nodes = (Node**)malloc(layers*(sizeof(Node*)));
 	for (int i = 0; i < layers; i++) {
-		nodes[i] = (Node*)malloc(perLayer * sizeof(Node));
+		nodes[i] = (Node*)malloc(perLayerDimension * sizeof(Node));
 		for (int j = 0; j < perLayerDimension; j++) {
 			nodes[i][j].bias = 0;
 			//setting up nodes as existing or not depending on different numbers of inputs outputs and amount of nodes in hidden layers
@@ -485,6 +486,44 @@ void NN::run() {
 			forward(i, j);
 		}
 	}
+}
+
+void NN::setTictactoeInputs(int  _board[3][3]){
+	inputSet[0] = _board[0][0];
+	inputSet[1] = _board[0][1];
+	inputSet[2] = _board[0][2];
+	inputSet[3] = _board[1][0];
+	inputSet[4] = _board[1][1];
+	inputSet[5] = _board[1][2];
+	inputSet[6] = _board[2][0];
+	inputSet[7] = _board[2][1];
+	inputSet[8] = _board[2][2];
+}
+
+void NN::trainOnTictactoe(TrainingBoard _trainingBoards[109], int _numberOfBoards){
+	clearBatchGradient();
+	for (int i = 0; i < _numberOfBoards; i++) {
+		outputSet[0] = 0;
+		outputSet[1] = 0;
+		outputSet[2] = 0;
+		setTictactoeInputs(_trainingBoards[i].board);
+		outputSet[_trainingBoards[i].winner] = 1;
+		addGradientsBasedOnWeights();
+	}
+	changeWeightsBasedOnBatchGradients(0.1);
+}
+
+int NN::getTictactoePrediction(int _board[3][3])
+{
+	setTictactoeInputs(_board);
+	addGradientsBasedOnWeights();
+	int setIndex = 0;
+	for (int i = 1; i < outputs; i++) {
+		if (outputSet[i] > outputSet[setIndex]) {
+			setIndex = i;
+		}
+	}
+	return setIndex;
 }
 
 void NN::doTestSet() {
