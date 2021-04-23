@@ -50,7 +50,7 @@ void MainGame::initSystems() {
 	_camera.setScreenShakeIntensity(0);
 
 	nn = NN();
-	nn.init(9, 8, 8, 3);
+	nn.init(9, 5, 30, 1);
 	tictactoe = Tictactoe();
 	for (int i = 0; i < 100; i++) {
 		gradientGraph[i] = 0;
@@ -304,7 +304,7 @@ void MainGame::drawGame() {
 		spriteBatch.drawLine(glm::vec2((i) * 5 - 200, gradientGraph[i] - 300), glm::vec2((i + 1) * 5 - 200, gradientGraph[i + 1] - 300), 0, 0, 255, NULL, 1);
 	}
 	for (int i = 0; i < 99; i++) {
-		spriteBatch.drawLine(glm::vec2((i) * 5 - 200, errorGraph[i]*20 - 300), glm::vec2((i + 1) * 5 - 200, errorGraph[i + 1]*20 - 300), 255, 0, 0, NULL, 1);
+		spriteBatch.drawLine(glm::vec2((i) * 5 - 200, errorGraph[i]*20 - 300), glm::vec2((i + 1) * 5 - 200, errorGraph[i + 1] - 300), 255, 0, 0, NULL, 1);
 	}
 	spriteBatch.drawLine(glm::vec2(- 200, -300), glm::vec2(300, - 300), 255, 255, 255, NULL, 1);
 	//colour.r = nn.test() * 5;
@@ -325,21 +325,98 @@ void MainGame::drawGame() {
 
 	//Swap our buffer and draw everything to the screen!
 	_window.swapBuffer();
+	
 
-	int*** moves = tictactoe.getPossibleMoves();
-	int random = round(8.0f*((float)rand() / (float)RAND_MAX));
-	while (tictactoe.possibleMoves[random][0][0] == -1) {
-		random = round(8.0f*((float)rand() / (float)RAND_MAX));
-		tictactoe.getPossibleMoves();
-	}
-	tictactoe.makeMove(random);
-	//std::cout << nn.getTictactoePrediction(tictactoe.board) << " will most likely win\n";
-	if (tictactoe.timeToTrain) {
-		for (int i = 0; i < 100; i++) {
-			//std::cout << tictactoe.trainingBoards[i].winner << "\n";
+	//tic tac toe training:
+
+	for (int e = 0; e < 50; e++) {
+		tictactoe.resetTrainingBoards();
+		//playing until someone wins
+		int winner = 0;
+		while ((winner = tictactoe.getWinner()) == -1) {
+			//fill an array with all the possible next board states
+			tictactoe.getPossibleMoves();
+			//randomly choose one
+			int random = round(8.0f*((float)rand() / (float)RAND_MAX));
+			while (tictactoe.possibleMoves[random][0][0] == -1) {
+				random = round(8.0f*((float)rand() / (float)RAND_MAX));
+			}
+			// finding out which move the nn prefers:
+
+			//loop through all possible moves
+			int highestIndex = -1;
+			double highestEvaluation = -1;
+			for (int i = 0; i < 9; i++) {
+				if (tictactoe.possibleMoves[i][0][0] != -1) {
+					nn.inputSet = tictactoe.convertBoard(tictactoe.possibleMoves[i]);
+					nn.run();
+					if (nn.nodes[3][0].value > highestEvaluation) {
+						highestEvaluation = nn.nodes[3][0].value;
+						highestIndex = i;
+					}
+				}
+				
+			}
+			//std::cout << highestIndex << std::endl;
+
+			//will choose a random move 25% of the time
+			if (((float)rand() / (float)RAND_MAX) > 0.75) {
+				tictactoe.makeMove(highestIndex);
+			}
+			else {
+				tictactoe.makeMove(random);
+			}
+			
+			tictactoe.logBoard();
 		}
-		nn.trainOnTictactoe(tictactoe.trainingBoards, tictactoe.numberOfTrainingBoards);
-		tictactoe.numberOfTrainingBoards = 0;
-		tictactoe.timeToTrain = false;
+		double reward;
+
+		//training
+		int i = 0;
+		double rewardDecay = 0.75;
+		//training on the 1s side
+
+		//choosing reward based on win or loss
+		if (winner == 1) {
+			reward = 10;
+			i = tictactoe.numberOfTrainingBoards - 1;
+		}
+		else {
+			reward = 0;
+			i = tictactoe.numberOfTrainingBoards - 2;
+		}
+
+		//train network on all board states where 1 had just make a move, diminishing the reward as you go back in time
+
+		for (; i >= 0; i -= 2) {
+			nn.addTrainingSet(tictactoe.convertBoard(tictactoe.trainingBoards[i].board), &reward);
+			reward *= rewardDecay;
+		}
+
+
+		//training on the 2s side
+
+		//flipping the 1s and 2s
+		tictactoe.flipTrainingBoards();
+
+		//choosing reward based on win or loss
+		if (winner == 2) {
+			reward = 10;
+			i = tictactoe.numberOfTrainingBoards - 1;
+		}
+		else {
+			reward = 0;
+			i = tictactoe.numberOfTrainingBoards - 2;
+		}
+
+		//train network on all board states where 2 had just make a move, diminishing the reward as you go back in time
+
+		for (; i >= 0; i -= 2) {
+			nn.addTrainingSet(tictactoe.convertBoard(tictactoe.trainingBoards[i].board), &reward);
+			reward *= rewardDecay;
+		}
+		tictactoe.init();
 	}
+	nn.trainOnCachedSets();
+	nn.clearTrainingSets();
 }

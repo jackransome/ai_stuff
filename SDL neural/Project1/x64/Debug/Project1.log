@@ -6,8 +6,6 @@ c:\users\jack\documents\github\ai stuff\ai_stuff\sdl neural\project1\maingame.cp
 c:\users\jack\documents\github\ai stuff\ai_stuff\sdl neural\project1\maingame.cpp(238): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
 c:\users\jack\documents\github\ai stuff\ai_stuff\sdl neural\project1\maingame.cpp(255): warning C4244: '=': conversion from 'double' to 'GLubyte', possible loss of data
 c:\users\jack\documents\github\ai stuff\ai_stuff\sdl neural\project1\maingame.cpp(264): warning C4244: '=': conversion from 'double' to 'GLubyte', possible loss of data
-c:\users\jack\documents\github\ai stuff\ai_stuff\sdl neural\project1\maingame.cpp(330): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-c:\users\jack\documents\github\ai stuff\ai_stuff\sdl neural\project1\maingame.cpp(332): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-  Tictactoe.cpp
-  Generating Code...
+c:\users\jack\documents\github\ai stuff\ai_stuff\sdl neural\project1\maingame.cpp(340): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+c:\users\jack\documents\github\ai stuff\ai_stuff\sdl neural\project1\maingame.cpp(342): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
   Project1.vcxproj -> C:\Users\Jack\Documents\GitHub\ai stuff\ai_stuff\SDL neural\x64\Debug\Game.exe

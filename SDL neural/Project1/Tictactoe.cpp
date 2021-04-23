@@ -49,7 +49,7 @@ int *** Tictactoe::getPossibleMoves(){
 		}
 	}
 	if (isFilled) {
-		init();
+		//init();
 	}
 	return (int***)possibleMoves;
 }
@@ -70,14 +70,13 @@ int Tictactoe::makeMove(int _index){
 		nextTurn = 1;
 	}
 	//std::cout << "\n";
-	sinceFirstMove++;
-	logBoard();
+	//sinceFirstMove++;
 	if (getWinner() >= 0) {
-		addTrainingResult(getWinner());
-		init();
-		if (numberOfTrainingBoards >= 100) {
-			timeToTrain = true;
-		}
+		//addTrainingResult(getWinner());
+		//init();
+		//if (numberOfTrainingBoards >= 100) {
+			//timeToTrain = true;
+		//}
 	}
 	return getWinner();
 }
@@ -124,6 +123,33 @@ int Tictactoe::getWinner() {
 	return -1;
 }
 
+double* Tictactoe::convertBoard(int _board[3][3])
+{
+	double* convertedBoard = (double*)malloc(9 * sizeof(double));
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
+			convertedBoard[i*3 + j] = board[i][j];
+		}
+	}
+	return convertedBoard;
+}
+
+void Tictactoe::flipTrainingBoards(){
+	for (int i = 0; i < numberOfTrainingBoards; i++) {
+		// change 1s to 2s and 2s to 1s
+		for (int j = 0; j < 3; j++) {
+			for (int k = 0; k < 3; k++) {
+				if (trainingBoards[i].board[j][k] == 1) {
+					trainingBoards[i].board[j][k] = 2;
+				}
+				if (trainingBoards[i].board[j][k] == 2) {
+					trainingBoards[i].board[j][k] = 1;
+				}
+			}
+		}
+	}
+}
+
 void Tictactoe::logBoard() {
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
@@ -131,7 +157,11 @@ void Tictactoe::logBoard() {
 		}
 	}
 	numberOfTrainingBoards++;
-	if (numberOfTrainingBoards == 109) {
-		numberOfTrainingBoards = 0;
+	if (numberOfTrainingBoards == 9) {
+		//std::cout << "MAX NUMBER OF TRAINING BOARDS REACHED" << std::endl;
 	}
+}
+
+void Tictactoe::resetTrainingBoards(){
+	numberOfTrainingBoards = 0;
 }

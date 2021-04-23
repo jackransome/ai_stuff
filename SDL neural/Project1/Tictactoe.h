@@ -3,10 +3,12 @@
 
 class Tictactoe {
 public:
-	TrainingBoard trainingBoards[109];
+	TrainingBoard trainingBoards[9];
 	int sinceFirstMove;
 	int numberOfTrainingBoards;
+	int numberOfPossibleMoves;
 	bool timeToTrain;
+	int winningMove;
 	//1s and 2s, 1s go first
 	int board[3][3];
 	//same format at board but boards that are invalid have a -1 at [0][0]
@@ -22,9 +24,15 @@ public:
 
 	void logBoard();
 
+	void resetTrainingBoards();
+
 	int*** getPossibleMoves();
 
 	int makeMove(int _index);
 
 	int getWinner();
+
+	double* convertBoard(int _board[3][3]);
+
+	void flipTrainingBoards();
 };
