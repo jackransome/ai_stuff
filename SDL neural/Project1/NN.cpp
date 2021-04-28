@@ -305,7 +305,7 @@ void NN::clearTrainingSets(){
 	numberOfCachedSets = 0;
 }
 
-void NN::trainOnCachedSets(){
+void NN::trainOnCachedSets(float _learningRate){
 	if (stopLearning) {
 		return;
 	}
@@ -333,7 +333,7 @@ void NN::trainOnCachedSets(){
 	}
 	last5Errors[errorCounter] = error / numberOfCachedSets;
 
-	changeWeightsBasedOnBatchGradients(0.02);
+	changeWeightsBasedOnBatchGradients(_learningRate);
 }
 
 double NN::addGradientFromCachedSet(int _index){

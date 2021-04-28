@@ -73,7 +73,7 @@ public:
 
 	void clearTrainingSets();
 
-	void trainOnCachedSets();
+	void trainOnCachedSets(float _learningRate);
 
 	double addGradientFromCachedSet(int _index);
 

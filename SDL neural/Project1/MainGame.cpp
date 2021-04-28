@@ -50,7 +50,7 @@ void MainGame::initSystems() {
 	_camera.setScreenShakeIntensity(0);
 
 	nn = NN();
-	nn.init(9, 5, 30, 1);
+	nn.init(18, 3, 64, 1);
 	tictactoe = Tictactoe();
 	for (int i = 0; i < 100; i++) {
 		gradientGraph[i] = 0;
@@ -145,7 +145,7 @@ void MainGame::processInput() {
 		}
 	}
 	if (_inputManager.isKeyPressed(SDLK_f)) {
-		nn.init(4, 3, 7, 7);
+		nn.init(18, 4, 20, 1);
 	}
 	if (_inputManager.isKeyPressed(SDLK_g)) {
 		if (!lastg) {
@@ -166,6 +166,13 @@ void MainGame::processInput() {
 	}
 	if (_inputManager.isKeyPressed(SDLK_t)) {
 		nn.doTestSet();
+	}
+
+	if (_inputManager.isKeyPressed(SDLK_k)) {
+		learningRate *= 2;
+	}
+	if (_inputManager.isKeyPressed(SDLK_l)) {
+		learningRate /= 2;
 	}
 }
 
@@ -329,11 +336,13 @@ void MainGame::drawGame() {
 
 	//tic tac toe training:
 
-	for (int e = 0; e < 50; e++) {
+	for (int e = 0; e < 5; e++) {
+		tictactoe.init();
 		tictactoe.resetTrainingBoards();
 		//playing until someone wins
 		int winner = 0;
 		while ((winner = tictactoe.getWinner()) == -1) {
+			
 			//fill an array with all the possible next board states
 			tictactoe.getPossibleMoves();
 			//randomly choose one
@@ -350,8 +359,8 @@ void MainGame::drawGame() {
 				if (tictactoe.possibleMoves[i][0][0] != -1) {
 					nn.inputSet = tictactoe.convertBoard(tictactoe.possibleMoves[i]);
 					nn.run();
-					if (nn.nodes[3][0].value > highestEvaluation) {
-						highestEvaluation = nn.nodes[3][0].value;
+					if (nn.nodes[2][0].value > highestEvaluation) {
+						highestEvaluation = nn.nodes[2][0].value;
 						highestIndex = i;
 					}
 				}
@@ -359,21 +368,25 @@ void MainGame::drawGame() {
 			}
 			//std::cout << highestIndex << std::endl;
 
-			//will choose a random move 25% of the time
-			if (((float)rand() / (float)RAND_MAX) > 0.75) {
+			//will choose a random move 5% of the time
+			if (((float)rand() / (float)RAND_MAX) > 0.95) {
 				tictactoe.makeMove(highestIndex);
 			}
 			else {
+				while (tictactoe.possibleMoves[random][0][0] == -1) {
+					random = 8.0f*((float)rand() / (float)RAND_MAX);
+				}
 				tictactoe.makeMove(random);
 			}
 			
 			tictactoe.logBoard();
+			tictactoe.flipBoard();
 		}
 		double reward;
 
 		//training
 		int i = 0;
-		double rewardDecay = 0.75;
+		double rewardDecay = 1;
 		//training on the 1s side
 
 		//choosing reward based on win or loss
@@ -415,8 +428,60 @@ void MainGame::drawGame() {
 			nn.addTrainingSet(tictactoe.convertBoard(tictactoe.trainingBoards[i].board), &reward);
 			reward *= rewardDecay;
 		}
-		tictactoe.init();
 	}
-	nn.trainOnCachedSets();
+	nn.trainOnCachedSets(learningRate);
 	nn.clearTrainingSets();
+
+	//testing vs random:
+
+	int wins = 0;
+	for (int e = 0; e < 100; e++) {
+		tictactoe.init();
+		tictactoe.resetTrainingBoards();
+		//playing until someone wins
+		int winner = 0;
+		while ((winner = tictactoe.getWinner()) == -1) {
+			//fill an array with all the possible next board states
+			tictactoe.getPossibleMoves();
+			//randomly choose one
+			int random = round(8.0f*((float)rand() / (float)RAND_MAX));
+			while (tictactoe.possibleMoves[random][0][0] == -1) {
+				random = round(8.0f*((float)rand() / (float)RAND_MAX));
+			}
+			// finding out which move the nn prefers:
+
+			//loop through all possible moves
+			int highestIndex = -1;
+			double highestEvaluation = -1;
+			for (int i = 0; i < 9; i++) {
+				if (tictactoe.possibleMoves[i][0][0] != -1) {
+					nn.inputSet = tictactoe.convertBoard(tictactoe.possibleMoves[i]);
+					nn.run();
+					if (nn.nodes[2][0].value > highestEvaluation) {
+						highestEvaluation = nn.nodes[2][0].value;
+						highestIndex = i;
+					}
+				}
+
+			}
+
+			//make the move predicted to be best
+
+			tictactoe.makeMove(highestIndex);
+			if ((winner = tictactoe.getWinner()) != -1) {
+				break;
+			}
+			tictactoe.getPossibleMoves();
+			while (tictactoe.possibleMoves[random][0][0] == -1) {
+				random = 8.0f*((float)rand() / (float)RAND_MAX);
+			}
+			tictactoe.makeMove(random);
+		}
+		//tictactoe.printBoard();
+		//std::cout << "winner = " << tictactoe.getWinner() << std::endl;
+		if (winner == 1) {
+			wins++;
+		}
+	}
+	std::cout << "won " << wins << "% of games" << std::endl;
 }

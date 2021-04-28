@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "TrainingBoard.h"
 
 class Tictactoe {
@@ -35,4 +35,10 @@ public:
 	double* convertBoard(int _board[3][3]);
 
 	void flipTrainingBoards();
+
+	void printBoard();
+
+	//(╯°□°)╯︵ ┻━┻
+	void flipBoard();
+
 };
