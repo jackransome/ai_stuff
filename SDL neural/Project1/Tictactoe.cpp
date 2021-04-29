@@ -123,23 +123,57 @@ int Tictactoe::getWinner() {
 	return -1;
 }
 
-double* Tictactoe::convertBoard(int _board[3][3])
+double* Tictactoe::convertBoard(int **_board)
 {
-	double* convertedBoard = (double*)malloc(18 * sizeof(double));
+	double* convertedBoard = (double*)malloc(27 * sizeof(double));
 
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
-			if (board[i][j] == 1) {
+			if (_board[i][j] == 1) {
 				convertedBoard[i * 3 + j] = 1;
 				convertedBoard[i * 3 + j + 9] = 0;
+				convertedBoard[i * 3 + j + 18] = 0;
 			}
-			else if (board[i][j] == 2) {
+			else if (_board[i][j] == 2) {
+				convertedBoard[i * 3 + j] = 0;
 				convertedBoard[i * 3 + j + 9] = 1;
-				convertedBoard[i * 3 + j] = 0;
+				convertedBoard[i * 3 + j + 18] = 0;
 			}
-			else {
-				convertedBoard[i * 3 + j + 9] = 0;
+			else if (_board[i][j] == 0) {
 				convertedBoard[i * 3 + j] = 0;
+				convertedBoard[i * 3 + j + 9] = 0;
+				convertedBoard[i * 3 + j + 18] = 1;
+			}
+		}
+	}
+	for (int i = 0; i < 27; i++) {
+		if (convertedBoard[i] < 0 || convertedBoard[i] >2){
+			std::cout << "tf";
+		}
+	}
+	return convertedBoard;
+}
+
+double* Tictactoe::convertBoard(int  _board[3][3])
+{
+	double* convertedBoard = (double*)malloc(27 * sizeof(double));
+
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
+			if (_board[i][j] == 1) {
+				convertedBoard[i * 3 + j] = 1;
+				convertedBoard[i * 3 + j + 9] = 0;
+				convertedBoard[i * 3 + j + 18] = 0;
+			}
+			else if (_board[i][j] == 2) {
+				convertedBoard[i * 3 + j] = 0;
+				convertedBoard[i * 3 + j + 9] = 1;
+				convertedBoard[i * 3 + j + 18] = 0;
+			}
+			else  if (_board[i][j] == 0) {
+				convertedBoard[i * 3 + j] = 0;
+				convertedBoard[i * 3 + j + 9] = 0;
+				convertedBoard[i * 3 + j + 18] = 1;
 			}
 		}
 	}
@@ -188,6 +222,35 @@ void Tictactoe::flipBoard(){
 	else {
 		nextTurn = 1;
 	}
+}
+
+int** Tictactoe::flipBoard(int _board[3][3]) {
+	int** flippedBoard = new int*[3];
+	for (int i = 0; i < 3; ++i)
+	{
+		flippedBoard[i] = new int[3];
+	}
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
+			if (_board[i][j] == 1) {
+				flippedBoard[i][j] = 2;
+			}
+			else if (_board[i][j] == 2) {
+				flippedBoard[i][j] = 1;
+			}
+			else {
+				flippedBoard[i][j] = 0;
+			}
+		}
+	}
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
+			if (flippedBoard[i][j] < 0 || flippedBoard[i][j] > 2) {
+				std::cout << "tf";
+			}
+		}
+	}
+	return flippedBoard;
 }
 
 void Tictactoe::logBoard() {

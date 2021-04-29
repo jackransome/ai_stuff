@@ -17,11 +17,13 @@ void NN::forward(int _layer, int _index) {
 			break;
 		}
 		nodes[_layer][_index].value += nodes[_layer - 1][i].value * connections[_layer - 1][i][_index] + nodes[_layer][_index].bias;
+
 	}
 	//clamping to 0
 	if (nodes[_layer][_index].value < 0) {
 		nodes[_layer][_index].value = 0;
 	}
+
 }
 
 // getting the gradient d weight from pre / d error
@@ -80,7 +82,10 @@ void NN::changeWeightsBasedOnBatchGradients(float _learningFactor) {
 				double x = 1.0f - _learningFactor * (batchDErrorDConnections[i][j][k] / magnitude);
 				double old = connections[i][j][k];
 				//connections[i][j][k] = connections[i][j][k] * x;
-				connections[i][j][k] = connections[i][j][k] - _learningFactor * (batchDErrorDConnections[i][j][k] / magnitude);
+				if (magnitude != 0) {
+					connections[i][j][k] = connections[i][j][k] - _learningFactor * batchDErrorDConnections[i][j][k];
+				}
+
 			}
 		}
 	}
@@ -88,7 +93,9 @@ void NN::changeWeightsBasedOnBatchGradients(float _learningFactor) {
 	for (int i = 1; i < layers - 1; i++) {
 		for (int j = 0; j < perLayer; j++) {
 			if (nodes[i][j].exists) {
-				nodes[i][j].bias = nodes[i][j].bias  -_learningFactor * (batchDErrorDBiases[i][j] / magnitude);
+				if (magnitude != 0) {
+					nodes[i][j].bias = nodes[i][j].bias - _learningFactor * batchDErrorDBiases[i][j];
+				}
 			}
 		}
 	}
@@ -103,10 +110,15 @@ float NN::addGradientsBasedOnWeights() {
 			}
 		}
 	}
+	//forward propagation
 	run();
 	// calculating the error for each output based on the calculated output layer values and the output set
 	for (int i = 0; i < outputs; i++) {
 		errors[i] = pow(outputSet[i] - nodes[layers - 1][i].value, 2);
+		if (nodes[layers - 1][i].value > 500) {
+			int f = 3;
+		}
+		//std::cout << "r: " << outputSet[i] << ", p: " << nodes[layers - 1][i].value << std::endl;
 		
 	}
 	//calculating total error
@@ -302,6 +314,7 @@ void NN::addTrainingSet(double * _inputs, double * _outputs){
 }
 
 void NN::clearTrainingSets(){
+	//std::cout << "numberOfCachedSets = " << numberOfCachedSets << "\n";
 	numberOfCachedSets = 0;
 }
 
@@ -339,6 +352,33 @@ void NN::trainOnCachedSets(float _learningRate){
 double NN::addGradientFromCachedSet(int _index){
 	inputSet = cachedInputs[_index];
 	outputSet = cachedOutputs[_index];
+	double board[3][3];
+	for (int i = 0; i < 3; i++) {
+		for (int k = 0; k < 3; k++) {
+			if (inputSet[i * 3 + k] == 1) {
+				board[i][k] = 1;
+			} else if (inputSet[i * 3 + k + 9] == 1) {
+				board[i][k] = 2;
+			}
+			else if (inputSet[i * 3 + k + 18] == 1) {
+				board[i][k] = 0;
+			}
+			
+		}
+	}
+	//for (int i = 0; i < 3; i++) {
+	//	std::cout << "\n";
+	//	for (int j = 0; j < 3; j++) {
+	//		std::cout << board[i][j] << " ";
+	//	}
+	//}
+	//if (outputSet[0] == 10) {
+	//	std::cout << outputSet[0] << "\n";
+	//}
+	//else {
+	//	std::cout << outputSet[0] << "\n";
+	//}
+	
 	return addGradientsBasedOnWeights();
 }
 
@@ -466,9 +506,11 @@ void NN::clearBatchGradient(){
 void NN::perturb(){
 	for (int i = 0; i < layers - 1; i++) {
 		for (int j = 0; j < perLayer; j++) {
+			nodes[i][j].bias += -0.05 + 0.1*((float)rand() / (float)RAND_MAX);
 			for (int k = 0; k < perLayer; k++) {
 				//if (connections[i][j][k] < 0.01) {
 					connections[i][j][k] += -0.15+0.3*((float)rand() / (float)RAND_MAX);
+					
 				//}
 			}
 		}
@@ -488,43 +530,6 @@ void NN::run() {
 	}
 }
 
-void NN::setTictactoeInputs(int  _board[3][3]){
-	inputSet[0] = _board[0][0];
-	inputSet[1] = _board[0][1];
-	inputSet[2] = _board[0][2];
-	inputSet[3] = _board[1][0];
-	inputSet[4] = _board[1][1];
-	inputSet[5] = _board[1][2];
-	inputSet[6] = _board[2][0];
-	inputSet[7] = _board[2][1];
-	inputSet[8] = _board[2][2];
-}
-
-void NN::trainOnTictactoe(TrainingBoard _trainingBoards[109], int _numberOfBoards){
-	clearBatchGradient();
-	for (int i = 0; i < _numberOfBoards; i++) {
-		outputSet[0] = 0;
-		outputSet[1] = 0;
-		outputSet[2] = 0;
-		setTictactoeInputs(_trainingBoards[i].board);
-		outputSet[_trainingBoards[i].winner] = 1;
-		addGradientsBasedOnWeights();
-	}
-	changeWeightsBasedOnBatchGradients(0.1);
-}
-
-int NN::getTictactoePrediction(int _board[3][3])
-{
-	setTictactoeInputs(_board);
-	addGradientsBasedOnWeights();
-	int setIndex = 0;
-	for (int i = 1; i < outputs; i++) {
-		if (outputSet[i] > outputSet[setIndex]) {
-			setIndex = i;
-		}
-	}
-	return setIndex;
-}
 
 void NN::doTestSet() {
 	int mistakes = 0;

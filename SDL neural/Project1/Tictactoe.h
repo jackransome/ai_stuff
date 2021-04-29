@@ -32,6 +32,8 @@ public:
 
 	int getWinner();
 
+	double* convertBoard(int **_board);
+
 	double* convertBoard(int _board[3][3]);
 
 	void flipTrainingBoards();
@@ -41,4 +43,5 @@ public:
 	//(╯°□°)╯︵ ┻━┻
 	void flipBoard();
 
+	int** flipBoard(int _board[3][3]);
 };

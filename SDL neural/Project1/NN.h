@@ -95,8 +95,6 @@ public:
 
 	void run();
 
-	void setTictactoeInputs(int  _board[3][3]);
-
 	void trainOnTictactoe(TrainingBoard _trainingBoards[109], int numberOfBoards);
 
 	int getTictactoePrediction(int  _board[3][3]);

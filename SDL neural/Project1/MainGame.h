@@ -44,7 +44,7 @@ private:
 
 	Tictactoe tictactoe;
 
-	float learningRate = 0.01;
+	float learningRate = 0.00001;
 
 	int gradientGraph[100];
 	int gradientIndex = 0;
