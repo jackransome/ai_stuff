@@ -275,6 +275,12 @@ void MainGame::drawGame() {
 				}
 
 				spriteBatch.draw(glm::vec4(i * 100 - 500, j * 15 - 100, 5, 5), glm::vec4(0, 0, 0, 0), NULL, 1, colour);
+				if (nn.nodes[i][j].value > 0) {
+					colour.r = 255;
+					colour.g = 255;
+					colour.b = 255;
+					spriteBatch.draw(glm::vec4(i * 100 - 500 + 1, j * 15 - 100 + 1, 3, 3), glm::vec4(0, 0, 0, 0), NULL, 1, colour);
+				}
 			}
 		}
 	}

@@ -528,6 +528,23 @@ void NN::run() {
 			forward(i, j);
 		}
 	}
+
+	//checking how many of the neurons are deactivated completely
+	/*
+	int numberOfNodes = 0;
+	int nodes0 = 0;
+	for (int i = 0; i < layers; i++) {
+		for (int j = 0; j < perLayer; j++) {
+			if (nodes[i][j].exists){
+				numberOfNodes++;
+				if (nodes[i][j].value == 0) {
+					nodes0++;
+				}
+			}
+		}
+	}
+	std::cout << (int)(100*((float)nodes0 / (float)numberOfNodes)) << "% of neurons are off\n";
+	*/
 }
 
 
