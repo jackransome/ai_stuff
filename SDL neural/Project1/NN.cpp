@@ -311,6 +311,7 @@ void NN::addTrainingSet(double * _inputs, double * _outputs){
 	cachedOutputs[numberOfCachedSets] = (double*)malloc(sizeof(double)*outputs);
 	memcpy(cachedOutputs[numberOfCachedSets], _outputs, sizeof(double)*outputs);
 	numberOfCachedSets++;
+	//std::cout << "XX: memory: " << _inputs[0] << "| graph position: " << _inputs[1] << "| prediction: " << _inputs[2] << "| memory action: " << _inputs[3] << ":: reward: " << _outputs[0] << "\n";
 }
 
 void NN::clearTrainingSets(){
@@ -352,20 +353,21 @@ void NN::trainOnCachedSets(float _learningRate){
 double NN::addGradientFromCachedSet(int _index){
 	inputSet = cachedInputs[_index];
 	outputSet = cachedOutputs[_index];
-	double board[3][3];
-	for (int i = 0; i < 3; i++) {
-		for (int k = 0; k < 3; k++) {
-			if (inputSet[i * 3 + k] == 1) {
-				board[i][k] = 1;
-			} else if (inputSet[i * 3 + k + 9] == 1) {
-				board[i][k] = 2;
-			}
-			else if (inputSet[i * 3 + k + 18] == 1) {
-				board[i][k] = 0;
-			}
-			
-		}
-	}
+	std::cout << "memory: " << inputSet[0] << "| graph position: " << inputSet[1] << "| prediction: " << inputSet[2] << "| memory action: " << inputSet[3] << ":: reward: " << outputSet[0] << "\n";
+	//double board[3][3];
+	//for (int i = 0; i < 3; i++) {
+	//	for (int k = 0; k < 3; k++) {
+	//		if (inputSet[i * 3 + k] == 1) {
+	//			board[i][k] = 1;
+	//		} else if (inputSet[i * 3 + k + 9] == 1) {
+	//			board[i][k] = 2;
+	//		}
+	//		else if (inputSet[i * 3 + k + 18] == 1) {
+	//			board[i][k] = 0;
+	//		}
+	//		
+	//	}
+	//}
 	//for (int i = 0; i < 3; i++) {
 	//	std::cout << "\n";
 	//	for (int j = 0; j < 3; j++) {

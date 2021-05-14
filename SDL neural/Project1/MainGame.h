@@ -21,15 +21,8 @@
 
 enum class GameState { PLAY, EXIT };
 
-// enum used for keeping track of the order of drawing
-enum CollectionType { wallTurretC, projectileC, playerNoC, enemyDroneC, wallC};
-
-// object used for keeping track of the order of drawing
-struct drawObject {
-	CollectionType collectionType;
-	int collectionIndex;
-	int yValue;
-};
+//
+enum Mode { ttt, graph };
 
 class MainGame
 {
@@ -40,11 +33,21 @@ public:
 	void run();
 private:
 
+	Mode mode = graph;
+
 	NN nn;
 
 	Tictactoe tictactoe;
 
-	float learningRate = 0.00001;
+	//oscilates from 0 to 20
+	int graphPosition;
+
+	//true = up, false = down
+	bool graphDirection;
+
+	double nnMemory;
+
+	float learningRate = 0.000001;
 
 	int gradientGraph[100];
 	int gradientIndex = 0;
@@ -52,9 +55,10 @@ private:
 	int errorIndex = 0;
 	int closestNodeToPlayerIndex;
 
-	bool playerNodeHasChanged;
+	bool evaluating = false;
+	bool drawing = false;
 
-	std::vector<drawObject> drawObjectCollection;
+	bool playerNodeHasChanged;
 
 	std::vector<glm::vec2> tempPath;
 

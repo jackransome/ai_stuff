@@ -50,7 +50,17 @@ void MainGame::initSystems() {
 	_camera.setScreenShakeIntensity(0);
 
 	nn = NN();
-	nn.init(27, 3, 243, 1);
+	//initialisations based on the mode
+	if (mode == ttt) {
+		nn.init(27, 4, 50, 1);
+	}
+	else if (mode == graph) {
+		nn.init(4, 5, 20, 1);
+		graphPosition = 0;
+		graphDirection = true;
+		nnMemory = 0;
+	}
+	
 	tictactoe = Tictactoe();
 	for (int i = 0; i < 100; i++) {
 		gradientGraph[i] = 0;
@@ -164,15 +174,23 @@ void MainGame::processInput() {
 	if (_inputManager.isKeyPressed(SDLK_j)) {
 		std::cout << "Last gradient magnitude: " << nn.getLast5MagnitudesAverage() << "\n";
 	}
-	if (_inputManager.isKeyPressed(SDLK_t)) {
-		nn.doTestSet();
-	}
-
 	if (_inputManager.isKeyPressed(SDLK_k)) {
 		learningRate *= 2;
 	}
 	if (_inputManager.isKeyPressed(SDLK_l)) {
 		learningRate /= 2;
+	}
+	if (_inputManager.isKeyPressed(SDLK_t)) {
+		evaluating = true;
+	}
+	else {
+		evaluating = false;
+	}
+	if (_inputManager.isKeyPressed(SDLK_d)) {
+		drawing = true;
+	}
+	else {
+		drawing = false;
 	}
 }
 
@@ -225,74 +243,83 @@ void MainGame::drawGame() {
 	//nn.trainOnCachedSets();
 	//nn.clearTrainingSets();
 	//nn.trainNetwork();
-	for (int i = 0; i < nn.layers - 1; i++) {
-		for (int j = 0; j < nn.perLayerDimension; j++) { //the previous
-			for (int k = 0; k < nn.perLayerDimension; k++) { //the current
-				if (!(nn.nodes[i][j].exists && nn.nodes[i + 1][k].exists)) {
-					//spriteBatch.drawLine(glm::vec2(i * 100, j * 10 - 30), glm::vec2(i * 100 + 100, k * 10 - 30), 255, 0, 0, NULL, 1);
-				}
-				else {
-					if (nn.connections[i][j][k] < 0) {
-						spriteBatch.drawLine(glm::vec2(i * 100 - 500, j * 15 - 100), glm::vec2(i * 100 - 400, k * 15 - 100), nn.connections[i][j][k] * 255, 0, 0, NULL, 1);
-					}
-					else if (nn.connections[i][j][k] < -1) {
-						spriteBatch.drawLine(glm::vec2(i * 100 - 500, j * 15 - 100), glm::vec2(i * 100 - 400, k * 15 - 100), 255, 0, 0, NULL, 1);
-					}
-					else if (nn.connections[i][j][k] > 1) {
-						spriteBatch.drawLine(glm::vec2(i * 100 - 500, j * 15 - 100), glm::vec2(i * 100 - 400, k * 15 - 100), 0/*nn.dErrorDConnections[i][j][k] * 255*/, 255, 0, NULL, 1);
+	if (drawing) {
+		for (int i = 0; i < nn.layers - 1; i++) {
+			for (int j = 0; j < nn.perLayerDimension; j++) { //the previous
+				for (int k = 0; k < nn.perLayerDimension; k++) { //the current
+					if (!(nn.nodes[i][j].exists && nn.nodes[i + 1][k].exists)) {
+						//spriteBatch.drawLine(glm::vec2(i * 100, j * 10 - 30), glm::vec2(i * 100 + 100, k * 10 - 30), 255, 0, 0, NULL, 1);
 					}
 					else {
-						spriteBatch.drawLine(glm::vec2(i * 100 - 500, j * 15 - 100), glm::vec2(i * 100 - 400, k * 15 - 100), 0/*nn.dErrorDConnections[i][j][k] * 255*/, nn.connections[i][j][k] * 255, 0, NULL, 1);
-					}
-				}
-				
-			}
+						//if (nn.batchDErrorDConnections[i][j][k] < 0) {
+						//	spriteBatch.drawLine(glm::vec2(i * 100 - 500, j * 15 - 100), glm::vec2(i * 100 - 400, k * 15 - 100), -nn.batchDErrorDConnections[i][j][k] * 25, 0, 0, NULL, 1);
+						//}
+						//else {
+						//	spriteBatch.drawLine(glm::vec2(i * 100 - 500, j * 15 - 100), glm::vec2(i * 100 - 400, k * 15 - 100), 0, nn.batchDErrorDConnections[i][j][k] * 25, 0, NULL, 1);
+						//}
 
+						if (nn.connections[i][j][k] < 0) {
+							spriteBatch.drawLine(glm::vec2(i * 100 - 500, j * 15 - 100), glm::vec2(i * 100 - 400, k * 15 - 100), nn.connections[i][j][k] * 255, 0, 0, NULL, 1);
+						}
+						else if (nn.connections[i][j][k] < -1) {
+							spriteBatch.drawLine(glm::vec2(i * 100 - 500, j * 15 - 100), glm::vec2(i * 100 - 400, k * 15 - 100), 255, 0, 0, NULL, 1);
+						}
+						else if (nn.connections[i][j][k] > 1) {
+							spriteBatch.drawLine(glm::vec2(i * 100 - 500, j * 15 - 100), glm::vec2(i * 100 - 400, k * 15 - 100), 0/*nn.dErrorDConnections[i][j][k] * 255*/, 255, 0, NULL, 1);
+						}
+						else {
+							spriteBatch.drawLine(glm::vec2(i * 100 - 500, j * 15 - 100), glm::vec2(i * 100 - 400, k * 15 - 100), 0/*nn.dErrorDConnections[i][j][k] * 255*/, nn.connections[i][j][k] * 255, 0, NULL, 1);
+						}
+					}
+
+				}
+
+			}
 		}
-	}
-	for (int i = 0; i < nn.layers; i++) {
-		for (int j = 0; j < nn.perLayer; j++) {
-			if (nn.nodes[i][j].exists) {
-				if (nn.nodes[i][j].bias > 0) {
-					colour.r = 0;
-					if (nn.nodes[i][j].bias * 10000 > 255) {
-						colour.g = 255;
+		for (int i = 0; i < nn.layers; i++) {
+			for (int j = 0; j < nn.perLayer; j++) {
+				if (nn.nodes[i][j].exists) {
+					if (nn.nodes[i][j].bias > 0) {
+						colour.r = 0;
+						if (nn.nodes[i][j].bias * 10000 > 255) {
+							colour.g = 255;
+						}
+						else {
+							colour.g = nn.nodes[i][j].bias * 10000;
+						}
+						colour.b = 100;
 					}
 					else {
-						colour.g = nn.nodes[i][j].bias * 10000;
+						if (-nn.nodes[i][j].bias * 10000 > 255) {
+							colour.r = 255;
+						}
+						else {
+							colour.r = -nn.nodes[i][j].bias * 10000;
+						}
+						colour.g = 0;
+						colour.b = 100;
 					}
-					colour.b = 100;
-				}
-				else {
-					if (-nn.nodes[i][j].bias * 10000 > 255) {
+
+					spriteBatch.draw(glm::vec4(i * 100 - 500, j * 15 - 100, 5, 5), glm::vec4(0, 0, 0, 0), NULL, 1, colour);
+					if (nn.nodes[i][j].value > 0) {
 						colour.r = 255;
+						colour.g = 255;
+						colour.b = 255;
+						spriteBatch.draw(glm::vec4(i * 100 - 500 + 1, j * 15 - 100 + 1, 3, 3), glm::vec4(0, 0, 0, 0), NULL, 1, colour);
 					}
-					else {
-						colour.r = -nn.nodes[i][j].bias * 10000;
-					}
-					colour.g = 0;
-					colour.b = 100;
-				}
-
-				spriteBatch.draw(glm::vec4(i * 100 - 500, j * 15 - 100, 5, 5), glm::vec4(0, 0, 0, 0), NULL, 1, colour);
-				if (nn.nodes[i][j].value > 0) {
-					colour.r = 255;
-					colour.g = 255;
-					colour.b = 255;
-					spriteBatch.draw(glm::vec4(i * 100 - 500 + 1, j * 15 - 100 + 1, 3, 3), glm::vec4(0, 0, 0, 0), NULL, 1, colour);
 				}
 			}
 		}
 	}
 	for (int i = 0; i < nn.layers; i++) {
-for (int j = 0; j < nn.perLayer; j++) { //the previous
-	for (int k = 0; k < nn.perLayer; k++) { //the current
-		if (i == 0 && k == nn.inputs) break;
-		if (i == nn.layers - 1 && k == nn.outputs) break;
-		//spriteBatch.drawLine(glm::vec2(i * 100, j * 100 + - 500), glm::vec2(i * 100 + 100, k * 100 - 500), nn.dErrorDConnections[i][j][k] * 255, 0, 0, NULL, 1);
-	}
+		for (int j = 0; j < nn.perLayer; j++) { //the previous
+			for (int k = 0; k < nn.perLayer; k++) { //the current
+				if (i == 0 && k == nn.inputs) break;
+				if (i == nn.layers - 1 && k == nn.outputs) break;
+				//spriteBatch.drawLine(glm::vec2(i * 100, j * 100 + - 500), glm::vec2(i * 100 + 100, k * 100 - 500), nn.dErrorDConnections[i][j][k] * 255, 0, 0, NULL, 1);
+			}
 
-}
+		}
 	}
 
 	gradientIndex++;
@@ -343,176 +370,278 @@ for (int j = 0; j < nn.perLayer; j++) { //the previous
 
 
 	//tic tac toe training:
-
-	for (int e = 0; e < 10; e++) {
-		tictactoe.init();
-		tictactoe.resetTrainingBoards();
-		//playing until someone wins
-		int winner = 0;
-		while ((winner = tictactoe.getWinner()) == -1) {
-			tictactoe.getPossibleMoves();
-			//randomly choose one
-			int random = round(8.0f*((float)rand() / (float)RAND_MAX));
-			while (tictactoe.possibleMoves[random][0][0] == -1) {
-				random = round(8.0f*((float)rand() / (float)RAND_MAX));
-			}
-			tictactoe.makeMove(random);
-			tictactoe.logBoard();
-			if ((winner = tictactoe.getWinner()) != -1) {
-				break;
-			}
-
-			//fill an array with all the possible next board states
-			tictactoe.getPossibleMoves();
-
-			// finding out which move the nn prefers:
-
-			//loop through all possible moves
-			int highestIndex = -1;
-			double highestEvaluation = -1;
-			double ratings[9] = { 0 };
-			for (int i = 0; i < 9; i++) {
-				if (tictactoe.possibleMoves[i][0][0] != -1) {
-					nn.inputSet = tictactoe.convertBoard(tictactoe.flipBoard(tictactoe.possibleMoves[i]));
-					nn.run();
-					ratings[i] = nn.nodes[2][0].value;
-					if (nn.nodes[2][0].value > highestEvaluation) {
-						highestEvaluation = nn.nodes[2][0].value;
-						highestIndex = i;
-					}
-				}
-
-			}
-			//make the move predicted to be best 75% of the time
-
-			if (((float)rand() / (float)RAND_MAX) > 0.25){
-				tictactoe.makeMove(highestIndex);
-			}
-			else {
+	if (mode == ttt) {
+		for (int e = 0; e < 100; e++) {
+			tictactoe.init();
+			tictactoe.resetTrainingBoards();
+			//playing until someone wins
+			int winner = 0;
+			while ((winner = tictactoe.getWinner()) == -1) {
+				tictactoe.getPossibleMoves();
+				//randomly choose one
+				int random = round(8.0f*((float)rand() / (float)RAND_MAX));
 				while (tictactoe.possibleMoves[random][0][0] == -1) {
 					random = round(8.0f*((float)rand() / (float)RAND_MAX));
 				}
 				tictactoe.makeMove(random);
+				tictactoe.logBoard();
+				if ((winner = tictactoe.getWinner()) != -1) {
+					break;
+				}
+
+				//fill an array with all the possible next board states
+				tictactoe.getPossibleMoves();
+
+				// finding out which move the nn prefers:
+
+				//loop through all possible moves
+				int highestIndex = -1;
+				double highestEvaluation = -1;
+				double ratings[9] = { 0 };
+				for (int i = 0; i < 9; i++) {
+					if (tictactoe.possibleMoves[i][0][0] != -1) {
+						nn.inputSet = tictactoe.convertBoard(tictactoe.possibleMoves[i]);
+						nn.run();
+						ratings[i] = nn.nodes[3][0].value;
+						if (nn.nodes[3][0].value > highestEvaluation) {
+							highestEvaluation = nn.nodes[3][0].value;
+							highestIndex = i;
+						}
+					}
+
+				}
+				//make the move predicted to be best 5% of the time
+
+				if (((float)rand() / (float)RAND_MAX) > 0.99) {
+					tictactoe.makeMove(highestIndex);
+				}
+				else {
+					while (tictactoe.possibleMoves[random][0][0] == -1) {
+						random = round(8.0f*((float)rand() / (float)RAND_MAX));
+					}
+					tictactoe.makeMove(random);
+				}
+
+				tictactoe.logBoard();
 			}
+			double reward;
+
+			//training
+			int i = 0;
+			double rewardDecay = 0.8;
+			//training on the 2s side
+
+			//choosing reward based on win or loss
+			if (winner == 2) {
+				reward = 10;
+				i = tictactoe.numberOfTrainingBoards - 1;
+			}
+			else {
+				reward = 0;
+				i = tictactoe.numberOfTrainingBoards - 2;
+			}
+
+			//train network on all board states where 2 had just make a move, diminishing the reward as you go back in time
+
+			for (; i >= 0; i -= 2) {
+				nn.addTrainingSet(tictactoe.convertBoard(tictactoe.trainingBoards[i].board), &reward);
+				double board[3][3];
+				double* inputSet = tictactoe.convertBoard(tictactoe.trainingBoards[i].board);
+				for (int i = 0; i < 3; i++) {
+					for (int k = 0; k < 3; k++) {
+						if (inputSet[i * 3 + k] == 1) {
+							board[i][k] = 1;
+						}
+						else if (inputSet[i * 3 + k + 9] == 1) {
+							board[i][k] = 2;
+						}
+						else if (inputSet[i * 3 + k + 18] == 1) {
+							board[i][k] = 0;
+						}
+					}
+				}
+				reward *= rewardDecay;
+			}
+
+
+			//training on the 2s side
+
+			//flipping the 1s and 2s
+			tictactoe.flipTrainingBoards();
+
+			//choosing reward based on win or loss
+			if (winner == 2) {
+				reward = 10;
+				i = tictactoe.numberOfTrainingBoards - 1;
+			}
+			else {
+				reward = 0;
+				i = tictactoe.numberOfTrainingBoards - 2;
+			}
+
+			//train network on all board states where 2 had just make a move, diminishing the reward as you go back in time
+
+			for (; i >= 0; i -= 2) {
+				//nn.addTrainingSet(tictactoe.convertBoard(tictactoe.trainingBoards[i].board), &reward);
+				reward *= rewardDecay;
+			}
+		}
+		nn.trainOnCachedSets(learningRate);
+		nn.clearTrainingSets();
+
+		//testing vs random:
+		if (evaluating) {
+			int wins = 0;
+			for (int e = 0; e < 50; e++) {
+				tictactoe.init();
+				tictactoe.resetTrainingBoards();
+				//playing until someone wins
+				int winner = 0;
+				while ((winner = tictactoe.getWinner()) == -1) {
+					tictactoe.getPossibleMoves();
+					//randomly choose one
+					int random = round(8.0f*((float)rand() / (float)RAND_MAX));
+					while (tictactoe.possibleMoves[random][0][0] == -1) {
+						random = round(8.0f*((float)rand() / (float)RAND_MAX));
+					}
+					tictactoe.makeMove(random);
+					if ((winner = tictactoe.getWinner()) != -1) {
+						break;
+					}
+
+					//fill an array with all the possible next board states
+					tictactoe.getPossibleMoves();
+
+					// finding out which move the nn prefers:
+
+					//loop through all possible moves
+					int highestIndex = -1;
+					double highestEvaluation = -1;
+					double ratings[9] = { 0 };
+					for (int i = 0; i < 9; i++) {
+						if (tictactoe.possibleMoves[i][0][0] != -1) {
+							nn.inputSet = tictactoe.convertBoard(tictactoe.possibleMoves[i]);
+							nn.run();
+							ratings[i] = nn.nodes[3][0].value;
+							if (nn.nodes[3][0].value > highestEvaluation) {
+								highestEvaluation = nn.nodes[3][0].value;
+								highestIndex = i;
+							}
+						}
+
+					}
+
+					//make the move predicted to be best
+
+					tictactoe.makeMove(highestIndex);
+				}
+				//tictactoe.printBoard();
+				//std::cout << "winner = " << tictactoe.getWinner() << std::endl;
+				if (winner == 1) {
+					wins++;
+				}
+			}
+			std::cout << "won " << wins * 2 << "% of games" << std::endl;
+		}
+	}
+	else if (mode == graph) {
+		//we predict, run graph, then add training set based on hte graph and the chosen actions
+
+		//	Neural network training:
+		//
+		//		Actions: choosing the next prediction value
+		//				 choosing the next value to put in memory
+		//				 2*21 = 42 combinations
+		//
+		//		Inputs:  memory from previous run through
+		//				 current graph value
+		//
+		//		Output:  how good it is to take these actions in this scenario
+		//
+		//		The oracle: reward = 1 - distance from correct value
+
+		double * inputSet = (double*)malloc(sizeof(double) * 4); // memory | current value | prediction | next memory
+
+		nn.clearTrainingSets();
+		//adding training sets:
+
+		for (int e = 0; e < 100; e++) {
+
+			//iterate through all possible combinations of actions to find the best to take
+			float highestEvaluation = -100;
+			int bestPrediction = -1;
+			int bestMemoryAction = 0;
+
+			inputSet[0] = nnMemory;
+			inputSet[1] = graphPosition;
+
+			float evaluations[21];
+			for (int i = 0; i < 21; i++) {
+				//for putting 0 in memory
+				inputSet[2] = i;
+				inputSet[3] = 0;
+				nn.inputSet = inputSet;
+				nn.run();
+				if (nn.nodes[3][0].value > highestEvaluation) {
+					highestEvaluation = nn.nodes[4][0].value;
+					bestPrediction = i;
+					bestMemoryAction = 0;
+				}
+				//for putting 1 in memory
+				inputSet[2] = i;
+				inputSet[3] = 1;
+				nn.inputSet = inputSet;
+				nn.run();
+				if (nn.nodes[3][0].value > highestEvaluation) {
+					highestEvaluation = nn.nodes[4][0].value;
+					bestPrediction = i;
+					bestMemoryAction = 1;
+				}
+				evaluations[i] = nn.nodes[3][0].value;
+			}
+			if (bestPrediction == -1) {
+				std::cout << "COULD NOT FIND AN ACTION COMBINATION WITH EXPECTED REWARD ABOVE -100\n";
+				bestPrediction = 0;
+			}
+
 			
-			tictactoe.logBoard();
-		}
-		double reward;
-
-		//training
-		int i = 0;
-		double rewardDecay = 0.8;
-		//training on the 1s side
-
-		//choosing reward based on win or loss
-		if (winner == 1) {
-			reward = 10;
-			i = tictactoe.numberOfTrainingBoards - 1;
-		}
-		else {
-			reward = 0;
-			i = tictactoe.numberOfTrainingBoards - 2;
-		}
-
-		//train network on all board states where 1 had just make a move, diminishing the reward as you go back in time
-
-		for (; i >= 0; i -= 2) {
-			nn.addTrainingSet(tictactoe.convertBoard(tictactoe.trainingBoards[i].board), &reward);
-			double board[3][3];
-			double* inputSet = tictactoe.convertBoard(tictactoe.trainingBoards[i].board);
-			for (int i = 0; i < 3; i++) {
-				for (int k = 0; k < 3; k++) {
-					if (inputSet[i * 3 + k] == 1) {
-						board[i][k] = 1;
-					}
-					else if (inputSet[i * 3 + k + 9] == 1) {
-						board[i][k] = 2;
-					}
-					else if (inputSet[i * 3 + k + 18] == 1) {
-						board[i][k] = 0;
-					}
-				}
+			if (((float)rand() / (float)RAND_MAX) > 0.25) {
+				inputSet[2] = bestPrediction;
+				inputSet[3] = bestMemoryAction;
 			}
-			reward *= rewardDecay;
+			else {
+				//exploration
+				inputSet[2] = ((float)rand() / (float)RAND_MAX) * 20;
+				inputSet[3] = round((float)rand() / (float)RAND_MAX);
+			}
+
+
+			//runnning the graph: (startrs at 0, goes up linearly to 20, then back down to 0, repeat forever)
+			if (graphDirection) {
+				graphPosition++;
+			}
+			else {
+				graphPosition--;
+			}
+			if (graphPosition == 20) {
+				graphDirection = false;
+			}
+			else if (graphPosition == 0) {
+				graphDirection = true;
+			}
+
+			//calculating reward: 1 is perfect prediction, gets more negative the more off you are
+
+			double reward = 1.0f - abs(inputSet[2] - (double)graphPosition);
+
+			//adding the training set:
+
+			nn.addTrainingSet(inputSet, &reward);
+
+			nnMemory = inputSet[3];
+
 		}
-
-
-		//training on the 2s side
-
-		//flipping the 1s and 2s
-		tictactoe.flipTrainingBoards();
-
-		//choosing reward based on win or loss
-		if (winner == 2) {
-			reward = 10;
-			i = tictactoe.numberOfTrainingBoards - 1;
-		}
-		else {
-			reward = 0;
-			i = tictactoe.numberOfTrainingBoards - 2;
-		}
-
-		//train network on all board states where 2 had just make a move, diminishing the reward as you go back in time
-
-		for (; i >= 0; i -= 2) {
-			nn.addTrainingSet(tictactoe.convertBoard(tictactoe.trainingBoards[i].board), &reward);
-			reward *= rewardDecay;
-		}
+		nn.trainOnCachedSets(learningRate/10);
+		free(inputSet);
 	}
-	nn.trainOnCachedSets(learningRate);
-	nn.clearTrainingSets();
-
-	//testing vs random:
-
-	int wins = 0;
-	for (int e = 0; e < 50; e++) {
-		tictactoe.init();
-		tictactoe.resetTrainingBoards();
-		//playing until someone wins
-		int winner = 0;
-		while ((winner = tictactoe.getWinner()) == -1) {
-			tictactoe.getPossibleMoves();
-			//randomly choose one
-			int random = round(8.0f*((float)rand() / (float)RAND_MAX));
-			while (tictactoe.possibleMoves[random][0][0] == -1) {
-				random = round(8.0f*((float)rand() / (float)RAND_MAX));
-			}
-			tictactoe.makeMove(random);
-			if ((winner = tictactoe.getWinner()) != -1) {
-				break;
-			}
-
-			//fill an array with all the possible next board states
-			tictactoe.getPossibleMoves();
-
-			// finding out which move the nn prefers:
-
-			//loop through all possible moves
-			int highestIndex = -1;
-			double highestEvaluation = -1;
-			double ratings[9] = { 0 };
-			for (int i = 0; i < 9; i++) {
-				if (tictactoe.possibleMoves[i][0][0] != -1) {
-					nn.inputSet = tictactoe.convertBoard(tictactoe.flipBoard(tictactoe.possibleMoves[i]));
-					nn.run();
-					ratings[i] = nn.nodes[2][0].value;
-					if (nn.nodes[2][0].value > highestEvaluation) {
-						highestEvaluation = nn.nodes[2][0].value;
-						highestIndex = i;
-					}
-				}
-
-			}
-
-			//make the move predicted to be best
-
-			tictactoe.makeMove(highestIndex);
-		}
-		//tictactoe.printBoard();
-		//std::cout << "winner = " << tictactoe.getWinner() << std::endl;
-		if (winner == 1) {
-			wins++;
-		}
-	}
-	std::cout << "won " << wins*2 << "% of games" << std::endl;
 }
