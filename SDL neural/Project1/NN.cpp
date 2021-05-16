@@ -64,11 +64,30 @@ void NN::changeWeightsBasedOnBatchGradients(float _learningFactor) {
 			}
 		}
 	}
-
+	
 	magnitude = sqrt(magnitude);
 	lastGradientMagnitude = magnitude;
 	magnitudeCounter++;
-	if (magnitudeCounter == 5) {
+	//limiting the magnitude of the gradient to 10^10
+	if (magnitude > 10000000000) {
+		std::cout << "magnitude over 10^10\n";
+		double multiplier = 10000000000.0f / magnitude;
+		for (int i = 0; i < layers - 1; i++) {
+			for (int j = 0; j < perLayer; j++) {
+				for (int k = 0; k < perLayer; k++) {
+					batchDErrorDConnections[i][j][k] *= multiplier;
+				}
+			}
+		}
+		for (int i = 1; i < layers - 1; i++) {
+			for (int j = 0; j < perLayer; j++) {
+				if (nodes[i][j].exists) {
+					nodes[i][j].dedv *= multiplier;
+				}
+			}
+		}
+	}
+	if (magnitude >= 5) {
 		magnitudeCounter = 0;
 	}
 	last5Magnitudes[magnitudeCounter] = lastGradientMagnitude;
@@ -335,8 +354,8 @@ void NN::trainOnCachedSets(float _learningRate){
 		}
 	}
 	if (toPerturb) {
-		std::cout << "error: " << error / numberOfCachedSets << "\n";
-		perturb();
+		std::cout << "perturbing!(disabled right now) error: " << error / numberOfCachedSets << "\n";
+		//perturb();
 		counter = 0;
 	}
 	counter++;
@@ -353,7 +372,7 @@ void NN::trainOnCachedSets(float _learningRate){
 double NN::addGradientFromCachedSet(int _index){
 	inputSet = cachedInputs[_index];
 	outputSet = cachedOutputs[_index];
-	std::cout << "memory: " << inputSet[0] << "| graph position: " << inputSet[1] << "| prediction: " << inputSet[2] << "| memory action: " << inputSet[3] << ":: reward: " << outputSet[0] << "\n";
+	//std::cout << "memory: " << inputSet[0] << "| graph position: " << inputSet[1] << "| prediction: " << inputSet[2] << "| memory action: " << inputSet[3] << ":: reward: " << outputSet[0] << "\n";
 	//double board[3][3];
 	//for (int i = 0; i < 3; i++) {
 	//	for (int k = 0; k < 3; k++) {

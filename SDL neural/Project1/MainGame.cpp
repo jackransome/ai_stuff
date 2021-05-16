@@ -575,6 +575,7 @@ void MainGame::drawGame() {
 			inputSet[0] = nnMemory;
 			inputSet[1] = graphPosition;
 
+
 			float evaluations[21];
 			for (int i = 0; i < 21; i++) {
 				//for putting 0 in memory
@@ -582,7 +583,7 @@ void MainGame::drawGame() {
 				inputSet[3] = 0;
 				nn.inputSet = inputSet;
 				nn.run();
-				if (nn.nodes[3][0].value > highestEvaluation) {
+				if (nn.nodes[4][0].value > highestEvaluation) {
 					highestEvaluation = nn.nodes[4][0].value;
 					bestPrediction = i;
 					bestMemoryAction = 0;
@@ -592,18 +593,17 @@ void MainGame::drawGame() {
 				inputSet[3] = 1;
 				nn.inputSet = inputSet;
 				nn.run();
-				if (nn.nodes[3][0].value > highestEvaluation) {
+				if (nn.nodes[4][0].value > highestEvaluation) {
 					highestEvaluation = nn.nodes[4][0].value;
 					bestPrediction = i;
 					bestMemoryAction = 1;
 				}
-				evaluations[i] = nn.nodes[3][0].value;
+				evaluations[i] = nn.nodes[4][0].value;
 			}
 			if (bestPrediction == -1) {
 				std::cout << "COULD NOT FIND AN ACTION COMBINATION WITH EXPECTED REWARD ABOVE -100\n";
 				bestPrediction = 0;
 			}
-
 			
 			if (((float)rand() / (float)RAND_MAX) > 0.25) {
 				inputSet[2] = bestPrediction;
@@ -630,9 +630,9 @@ void MainGame::drawGame() {
 				graphDirection = true;
 			}
 
-			//calculating reward: 1 is perfect prediction, gets more negative the more off you are
+			//calculating reward: 10 is perfect prediction, gets smaller it gets the more you are off by
 
-			double reward = 1.0f - abs(inputSet[2] - (double)graphPosition);
+			double reward = 20.0f - abs(inputSet[2] - (double)graphPosition);
 
 			//adding the training set:
 
