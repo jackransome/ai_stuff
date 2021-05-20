@@ -55,7 +55,7 @@ void MainGame::initSystems() {
 		nn.init(27, 4, 50, 1);
 	}
 	else if (mode == graph) {
-		nn.init(4, 5, 20, 1);
+		nn.init(4, 4, 10, 1);
 		graphPosition = 0;
 		graphDirection = true;
 		nnMemory = 0;
@@ -562,10 +562,21 @@ void MainGame::drawGame() {
 
 		double * inputSet = (double*)malloc(sizeof(double) * 4); // memory | current value | prediction | next memory
 
+		double reward = 0;
+
+		double * lastInputSet = (double*)malloc(sizeof(double) * 4);
+
+		double lastReward = 0;
+
+		bool firstPass = true;
+
 		nn.clearTrainingSets();
 		//adding training sets:
 
-		for (int e = 0; e < 100; e++) {
+		for (int e = 0; e < 41*4; e++) {
+
+			memcpy(lastInputSet, inputSet, sizeof(double) * 4);
+			lastReward = reward;
 
 			//iterate through all possible combinations of actions to find the best to take
 			float highestEvaluation = -100;
@@ -583,8 +594,8 @@ void MainGame::drawGame() {
 				inputSet[3] = 0;
 				nn.inputSet = inputSet;
 				nn.run();
-				if (nn.nodes[4][0].value > highestEvaluation) {
-					highestEvaluation = nn.nodes[4][0].value;
+				if (nn.nodes[3][0].value > highestEvaluation) {
+					highestEvaluation = nn.nodes[3][0].value;
 					bestPrediction = i;
 					bestMemoryAction = 0;
 				}
@@ -593,12 +604,12 @@ void MainGame::drawGame() {
 				inputSet[3] = 1;
 				nn.inputSet = inputSet;
 				nn.run();
-				if (nn.nodes[4][0].value > highestEvaluation) {
-					highestEvaluation = nn.nodes[4][0].value;
+				if (nn.nodes[3][0].value > highestEvaluation) {
+					highestEvaluation = nn.nodes[3][0].value;
 					bestPrediction = i;
 					bestMemoryAction = 1;
 				}
-				evaluations[i] = nn.nodes[4][0].value;
+				evaluations[i] = nn.nodes[3][0].value;
 			}
 			if (bestPrediction == -1) {
 				std::cout << "COULD NOT FIND AN ACTION COMBINATION WITH EXPECTED REWARD ABOVE -100\n";
@@ -616,7 +627,7 @@ void MainGame::drawGame() {
 			}
 
 
-			//runnning the graph: (startrs at 0, goes up linearly to 20, then back down to 0, repeat forever)
+			//runnning the graph: (starts at 0, goes up linearly to 20, then back down to 0, repeat forever)
 			if (graphDirection) {
 				graphPosition++;
 			}
@@ -632,16 +643,21 @@ void MainGame::drawGame() {
 
 			//calculating reward: 10 is perfect prediction, gets smaller it gets the more you are off by
 
-			double reward = 20.0f - abs(inputSet[2] - (double)graphPosition);
+			reward = 20.0f - abs(inputSet[2] - (double)graphPosition);
 
 			//adding the training set:
-
-			nn.addTrainingSet(inputSet, &reward);
+			if (firstPass == false) {
+				lastReward += reward;
+				nn.addTrainingSet(lastInputSet, &lastReward);
+			}
+			else {
+				firstPass = false;
+			}
 
 			nnMemory = inputSet[3];
 
 		}
-		nn.trainOnCachedSets(learningRate/10);
+		nn.trainOnCachedSets(learningRate/100);
 		free(inputSet);
 	}
 }

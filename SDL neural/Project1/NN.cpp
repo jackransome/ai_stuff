@@ -30,20 +30,20 @@ void NN::forward(int _layer, int _index) {
 void NN::back(int _layer, int _index, int _nodeInPrevLayerIndex) {
 
 	//getting d value of current / d weight from prev
-	float dcdwp = nodes[_layer - 1][_nodeInPrevLayerIndex].value;
+	float dvdwp = nodes[_layer - 1][_nodeInPrevLayerIndex].value;
 	//getting d error / d value of current
-	float dedc = 0;
+	float dedv = 0;
 	for (int i = 0; i < perLayer; i++) {
 		if (nodes[_layer + 1][i].exists) {
-			// getting the d err d value of node in next layer times the weight between the two nodes
-			double x = nodes[_layer + 1][i].dedv * connections[_layer][_index][i];
+			// getting the d err d value of node in next layer times the weight between the two nodes dedv = dedn * dndv
+			double dedv = nodes[_layer + 1][i].dedv * connections[_layer][_index][i];
 			// adding d err d weight of weight between this node and all nodes in the next layer
-			dedc += x;// dErrorDConnections[_layer][_index][i];
+			dedv += dedv;
 		}
 	}
-	nodes[_layer][_index].dedv = dedc;
+	nodes[_layer][_index].dedv = dedv;
 	//getting d error / d weight from prev
-	float dedwp = dedc * dcdwp;
+	float dedwp = dedv * dvdwp;
 	dErrorDConnections[_layer - 1][_nodeInPrevLayerIndex][_index] = dedwp;
 
 }
